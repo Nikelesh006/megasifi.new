@@ -10,13 +10,14 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.1",
+    "axios": "^1.13.2",
     "inngest": "^3.45.1",
     "lucide-react": "^0.553.0",
-    "mongoose": "^8.19.2",
+    "mongoose": "^8.19.3",
     "next": "^15.1.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-hot-toast": "^2.5.1",
+    "react-hot-toast": "^2.6.0",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
