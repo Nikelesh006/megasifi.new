@@ -1,0 +1,23 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    eslint: {
+        // Bypass ESLint during production builds (e.g., on Vercel)
+        ignoreDuringBuilds: true,
+    },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'res.cloudinary.com',
+                pathname: '**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'raw.githubusercontent.com',
+                pathname: '**',
+            },
+        ],
+    },
+};
+
+export default nextConfig;
