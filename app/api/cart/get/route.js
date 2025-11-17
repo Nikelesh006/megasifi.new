@@ -1,8 +1,7 @@
-import { getAuth } from "@clerk/nextjs/dist/types/server"
-import { NextResponse } from "next/server"
-import { connectDB } from "mongoose";
-import User from "@/models/user";
+import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import connectDB from "@/config/db";
+import User from "@/models/user";
 
 
 export async function GET(request){
