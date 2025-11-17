@@ -1,4 +1,7 @@
-import connectDB from "@/config/db"
+import connectDB from "@/config/db";
+import Address from "@/models/Address";
+import { getAuth } from "@clerk/next.js/server";
+import { NextResponse } from "next/server";
 
 
 
@@ -15,7 +18,7 @@ export async function POST(request){
     }
 
     catch{
-        
+         return NextResponse.json({ success:false , message:error.message});
 
     }
 }
