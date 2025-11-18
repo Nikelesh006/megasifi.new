@@ -1,4 +1,4 @@
-import { getAuth } from "@clerk/nextjs/dist/types/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { v2 as cloudinary} from "cloudinary";
 import { NextResponse } from "next/server";
 import Product from "@/models/Product";
