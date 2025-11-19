@@ -26,7 +26,7 @@ const AddProduct = () => {
     formData.append("category",category)
     formData.append("price",price)
     formData.append("offerPrice",offerPrice)
-    formData.append("image",files)
+ 
 
     for(let i=0;i<files.length;i++){
       formData.append("image",files[i])

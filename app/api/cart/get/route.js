@@ -14,7 +14,7 @@ export async function GET(request){
         const user=await User.findById(userId)
 
         const { cartItems}=user
-        return NextResponse.json({success:true,data:cartItems})
+        return NextResponse.json({success:true,cartItems})
 
     }catch(error){
         return NextResponse.json({success:false,message:error.message})

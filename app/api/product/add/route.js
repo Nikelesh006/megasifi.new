@@ -1,9 +1,11 @@
 import { getAuth } from "@clerk/nextjs/server";
-import { v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import { NextResponse } from "next/server";
 import Product from "@/models/Product";
 import connectDB from "@/config/db";
 import authSeller from "@/lib/authSeller";
+
+export const runtime = "nodejs";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -42,11 +44,11 @@ export async function POST(request){
                 const buffer=Buffer.from(arrayBuffer)
 
                 return new Promise((resolve,reject)=>{
-                    const stream =cloudinary.uploader.upload_large_stream(
+                    const stream =cloudinary.uploader.upload_stream(
                         {resource_type :"auto"},
-                        (err,result)=>{
-                            if(err){
-                                reject(err)
+                        (error,result)=>{
+                            if(error){
+                                reject(error)
                             }
                             else{
                                resolve(result)
