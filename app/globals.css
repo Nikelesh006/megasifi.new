@@ -16,7 +16,7 @@
     }
 
     body {
-      @apply bg-old-cream text-old-olive font-sans;
+      @apply bg-white text-gray-700 font-sans;
     }
     
     h1, h2, h3, h4, h5, h6 {
