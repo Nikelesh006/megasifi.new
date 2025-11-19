@@ -49,6 +49,11 @@ import product_details_page_apple_earphone_image2 from "./product_details_page_a
 import product_details_page_apple_earphone_image3 from "./product_details_page_apple_earphone_image3.png";
 import product_details_page_apple_earphone_image4 from "./product_details_page_apple_earphone_image4.png";
 import product_details_page_apple_earphone_image5 from "./product_details_page_apple_earphone_image5.png";
+import logo_maroon_megasifi from "./logo_maroon_megasifi.png";
+import banner1 from "./banner1.png";
+import banner2 from "./banner2.png";
+import banner3 from "./banner3.png";
+import banner4 from "./banner4.png";
 
 export const assets = {
   logo,
@@ -101,7 +106,12 @@ export const assets = {
   checkmark,
   saree_linen_image,
   saree_grey_image,
-  saree_new2_image
+  saree_new2_image,
+  logo_maroon_megasifi,
+  banner1,
+  banner2,
+  banner3,
+  banner4,
 };
 
 export const BagIcon = () => {

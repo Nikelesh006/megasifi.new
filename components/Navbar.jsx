@@ -15,28 +15,28 @@ const Navbar = () => {
   const { openSignIn } = useClerk()
 
   return (
-    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700">
+    <nav className="flex items-center justify-between px-4 md:px-10 lg:px-16 py-2.5 bg-gradient-to-r from-rose-100 to-rose-50 border-b border-rose-200 text-rose-800 shadow-sm">
       <Image
         className="cursor-pointer w-28 md:w-32"
         onClick={() => router.push('/')}
-        src={assets.logo}
+        src={assets.logo_maroon_megasifi}
         alt="logo"
       />
       <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
-        <Link href="/" className="hover:text-[#800020] hover:border-b-2 hover:border-[#800020] pb-1 transition-colors duration-200 ease-in-out">
+        <Link href="/" className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
           Home
         </Link>
-        <Link href="/all-products" className="hover:text-[#800020] hover:border-b-2 hover:border-[#800020] pb-1 transition-colors duration-200 ease-in-out">
+        <Link href="/all-products" className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
           Shop
         </Link>
-        <Link href="/"  className="hover:text-[#800020] hover:border-b-2 hover:border-[#800020] pb-1 transition-colors duration-200 ease-in-out">
+        <Link href="/"  className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
           About Us
         </Link>
-        <Link href="/"  className="hover:text-[#800020] hover:border-b-2 hover:border-[#800020] pb-1 transition-colors duration-200 ease-in-out">
+        <Link href="/"  className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
           Contact
         </Link>
 
-        {isSeller && <button onClick={() => router.push('/seller')} className="text-xs border px-4 py-1.5 rounded-full">Seller Dashboard</button>}
+        {isSeller && <button onClick={() => router.push('/seller')} className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition">Seller Dashboard</button>}
 
       </div>
 
@@ -68,7 +68,7 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center md:hidden gap-3">
-        {isSeller && <button onClick={() => router.push('/seller')} className="text-xs border px-4 py-1.5 rounded-full">Seller Dashboard</button>}
+        {isSeller && <button onClick={() => router.push('/seller')} className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition">Seller Dashboard</button>}
         { 
           user
           ?<>
