@@ -13,6 +13,33 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
+async function fileToBuffer(file) {
+  // prefer arrayBuffer if available (Edge / some runtimes)
+  if (file && typeof file.arrayBuffer === "function") {
+    const ab = await file.arrayBuffer();
+    return Buffer.from(ab);
+  }
+
+  // Node/next route handler: use stream() if provided
+  if (file && typeof file.stream === "function") {
+    const stream = file.stream();
+    const chunks = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
+  }
+
+  // fallback: if file is a string/URL, fetch it
+  if (typeof file === "string") {
+    const res = await fetch(file);
+    const ab = await res.arrayBuffer();
+    return Buffer.from(ab);
+  }
+
+  throw new Error("Unsupported file input: cannot convert to buffer");
+}
+
 export async function POST(request){
     try{
         // ensure DB is connected before any model/auth checks
@@ -44,8 +71,7 @@ export async function POST(request){
 
         const result = await Promise.all(
             files.map(async (file) => {
-                const arrayBuffer = await file.arrayBuffer();
-                const buffer = Buffer.from(arrayBuffer);
+                const buffer = await fileToBuffer(file);
 
                 return new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
