@@ -22,13 +22,16 @@ const ProductList = () => {
        const { data} =await axios.get("/api/product/seller-list",{headers:{Authorization:`Bearer ${token}`}})
 
        if(data.success){
-          setProducts(data.products)
-          setLoading(false)
+          setProducts(data.products || [])
        }else{
           toast.error(data.message)
+          setProducts([])
        }
     }catch(error){
        toast.error(error.message)
+       setProducts([])
+    }finally{
+       setLoading(false)
     }
     
   }
@@ -56,36 +59,44 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
-              {products.map((product, index) => (
-                <tr key={index} className="border-t border-gray-500/20">
-                  <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
-                    <div className="bg-gray-500/10 rounded p-2">
-                      <Image
-                        src={product.image[0]}
-                        alt="product Image"
-                        className="w-16"
-                        width={1280}
-                        height={720}
-                      />
-                    </div>
-                    <span className="truncate w-full">
-                      {product.name}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 max-sm:hidden">{product.category}</td>
-                  <td className="px-4 py-3">${product.offerPrice}</td>
-                  <td className="px-4 py-3 max-sm:hidden">
-                    <button onClick={() => router.push(`/product/${product._id}`)} className="flex items-center gap-1 px-1.5 md:px-3.5 py-2 bg-orange-600 text-white rounded-md">
-                      <span className="hidden md:block">Visit</span>
-                      <Image
-                        className="h-3.5"
-                        src={assets.redirect_icon}
-                        alt="redirect_icon"
-                      />
-                    </button>
+              {products && products.length > 0 ? (
+                products.map((product, index) => (
+                  <tr key={index} className="border-t border-gray-500/20">
+                    <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
+                      <div className="bg-gray-500/10 rounded p-2">
+                        <Image
+                          src={product.image[0]}
+                          alt="product Image"
+                          className="w-16"
+                          width={1280}
+                          height={720}
+                        />
+                      </div>
+                      <span className="truncate w-full">
+                        {product.name}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 max-sm:hidden">{product.category}</td>
+                    <td className="px-4 py-3">${product.offerPrice}</td>
+                    <td className="px-4 py-3 max-sm:hidden">
+                      <button onClick={() => router.push(`/product/${product._id}`)} className="flex items-center gap-1 px-1.5 md:px-3.5 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition-colors">
+                        <span className="hidden md:block">Visit</span>
+                        <Image
+                          className="h-3.5"
+                          src={assets.redirect_icon}
+                          alt="redirect_icon"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-4 py-8 text-center text-gray-500">
+                    No products found. Add some products to see them here.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
