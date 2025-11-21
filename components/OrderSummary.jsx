@@ -13,7 +13,7 @@ const OrderSummary = () => {
   const fetchUserAddresses = async () => {
     try {
       const token = await getToken();
-      const { data } = await axios.get("/api/user/get-addresses", {
+      const { data } = await axios.get("/api/user/get-address", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -62,15 +62,15 @@ const OrderSummary = () => {
         }
       );
 
-      if (data?.success) {
-        toast.success(data.message || "Order created");
+      if (data.success) {
+        toast.success(data.message );
         setCartItems({});
-        router.push("/orders-placed");
+        router.push("/order-placed");
       } else {
-        toast.error(data?.message || "Failed to create order");
+        toast.error(data.message );
       }
     } catch (error) {
-      toast.error(error?.message || "Failed to create order");
+      toast.error(error.message);
     }
   };
 
@@ -94,7 +94,7 @@ const OrderSummary = () => {
             >
               <span>
                 {selectedAddress
-                  ? `${selectedAddress.fullName}, ${selectedAddress.area}, ${selectedAddress.city}, ${selectedAddress.state}`
+                  ? `${selectedAddress.fullname}, ${selectedAddress.area}, ${selectedAddress.city}, ${selectedAddress.state}`
                   : "Select Address"}
               </span>
               <svg
@@ -111,8 +111,12 @@ const OrderSummary = () => {
             {isDropdownOpen && (
               <ul className="absolute w-full bg-white border shadow-md mt-1 z-10 py-1.5">
                 {userAddresses.map((address, index) => (
-                  <li key={index} className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer" onClick={() => handleAddressSelect(address)}>
-                    {address.fullName}, {address.area}, {address.city}, {address.state}
+                  <li
+                    key={index}
+                    className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer"
+                    onClick={() => handleAddressSelect(address)}
+                  >
+                    {address.fullname}, {address.area}, {address.city}, {address.state}
                   </li>
                 ))}
                 <li onClick={() => router.push("/add-address")} className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer text-center">

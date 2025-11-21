@@ -16,6 +16,20 @@ const Product = () => {
 
     const { products, router, addToCart } = useAppContext()
 
+    // Add delete handler to remove product via API and navigate away on success
+    const handleDelete = async () => {
+        if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
+        try {
+            const res = await fetch(`/api/product/delete?id=${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Delete failed");
+            // navigate back to home or products list after deletion
+            router.push("/");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete product.");
+        }
+    }
+
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
 

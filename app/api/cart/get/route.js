@@ -13,7 +13,7 @@ export async function GET(request){
 
         const user=await User.findById(userId)
 
-        const { cartItems}=user
+        const { cartItems }=user
         return NextResponse.json({success:true,cartItems})
 
     }catch(error){

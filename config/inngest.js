@@ -1,5 +1,5 @@
 import { Inngest } from "inngest";
-import  connectDB  from "@/config/db";
+import connectDB from "@/config/db";
 import User from "@/models/user";
 
 // Create a client to send and receive events
@@ -80,6 +80,7 @@ export const createUserOrder=inngest.createFunction({
         })
         
         await connectDB()
+        const { default: Order } = await import("@/models/Order")
         await Order.insertMany(orders)
 
         return {success:true,processed:orders}
