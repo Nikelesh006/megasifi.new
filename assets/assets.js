@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import logo from "./logo.svg";
 import search_icon from "./search_icon.svg";
 import user_icon from "./user_icon.svg";
-=======
-import search_icon from "./search_icon.svg";
-import user_icon from "./user_icon.svg";
-import heart_icon from "./heart_icon.svg";
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
 import cart_icon from "./cart_icon.svg";
 import add_icon from "./add_icon.svg";
 import order_icon from "./order_icon.svg";
@@ -22,7 +16,6 @@ import decrease_arrow from "./decrease_arrow.svg";
 import arrow_right_icon_colored from "./arrow_right_icon_colored.svg";
 import my_location_image from "./my_location_image.svg";
 import arrow_icon_white from "./arrow_icon_white.svg";
-<<<<<<< HEAD
 import heart_icon from "./heart_icon.svg";
 import star_icon from "./star_icon.svg";
 import redirect_icon from "./redirect_icon.svg";
@@ -56,35 +49,16 @@ import product_details_page_apple_earphone_image2 from "./product_details_page_a
 import product_details_page_apple_earphone_image3 from "./product_details_page_apple_earphone_image3.png";
 import product_details_page_apple_earphone_image4 from "./product_details_page_apple_earphone_image4.png";
 import product_details_page_apple_earphone_image5 from "./product_details_page_apple_earphone_image5.png";
-=======
-import star_icon from "./star_icon.svg";
-import redirect_icon from "./redirect_icon.svg";
-import upload_area from "./upload_area.png";
-import checkmark from "./checkmark.png";
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
 import logo_maroon_megasifi from "./logo_maroon_megasifi.png";
 import banner1 from "./banner1.png";
 import banner2 from "./banner2.png";
 import banner3 from "./banner3.png";
 import banner4 from "./banner4.png";
-<<<<<<< HEAD
 
 export const assets = {
   logo,
   search_icon,
   user_icon,
-=======
-import footer_banner1 from "./footer_banner1.png";
-import footer_banner2 from "./footer_banner2.png";
-import banner_mens from "./banner_mens.png";
-import banner_womens from "./banner_womens.png";
-import banner_womens2 from "./banner_womens2.png";
-
-export const assets = {
-  search_icon,
-  user_icon,
-  heart_icon,
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
   cart_icon,
   add_icon,
   order_icon,
@@ -100,7 +74,6 @@ export const assets = {
   arrow_right_icon_colored,
   my_location_image,
   arrow_icon_white,
-<<<<<<< HEAD
   heart_icon,
   star_icon,
   redirect_icon,
@@ -134,25 +107,11 @@ export const assets = {
   saree_linen_image,
   saree_grey_image,
   saree_new2_image,
-=======
-  star_icon,
-  redirect_icon,
-  upload_area,
-  checkmark,
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
   logo_maroon_megasifi,
   banner1,
   banner2,
   banner3,
   banner4,
-<<<<<<< HEAD
-=======
-  footer_banner1,
-  footer_banner2,
-  banner_mens,
-  banner_womens,
-  banner_womens2,
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
 };
 
 export const BagIcon = () => {

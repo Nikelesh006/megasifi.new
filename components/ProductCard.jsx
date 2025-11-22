@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
 
 const ProductCard = ({ product }) => {
-    const { currency, router } = useAppContext();
+    const { currency, router, addToCart } = useAppContext();
 
     return (
         <div
@@ -89,7 +89,7 @@ const ProductCard = ({ product }) => {
                         className="max-sm:hidden px-4 py-1.5 text-old-olive border border-old-border rounded-full text-xs hover:bg-old-gold hover:text-old-cream hover:border-old-gold transition-all duration-300"
                         onClick={(e) => {
                             e.stopPropagation();
-                            // Add to cart functionality here
+                            addToCart(product._id);
                         }}
                     >
                         Add to Cart

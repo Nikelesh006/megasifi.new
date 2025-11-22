@@ -6,12 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-<<<<<<< HEAD
     "lint": "next lint"
-=======
-    "lint": "next lint",
-    "inngest": "inngest dev"
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
   },
   "dependencies": {
     "@clerk/nextjs": "^6.35.2",
@@ -19,11 +14,7 @@
     "cloudinary": "^2.8.0",
     "inngest": "^3.45.1",
     "lucide-react": "^0.553.0",
-<<<<<<< HEAD
     "mongoose": "^8.20.0",
-=======
-    "mongoose": "^8.19.3",
->>>>>>> 69094b56f67eed1713fd4adb3a2a667a3ab6af6f
     "next": "^15.1.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
