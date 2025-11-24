@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { assets } from "@/assets/assets";
 import ProductCard from "@/components/ProductCard";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
@@ -42,9 +40,9 @@ const Product = () => {
         fetchProductData();
     }, [id, products.length])
 
-    return productData ? (<>
-        <Navbar />
+    return productData ? (
         <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                 <div className="px-5 lg:px-16 xl:px-20">
                     <div className="rounded-lg overflow-hidden bg-gray-500/10 mb-4">
@@ -149,8 +147,6 @@ const Product = () => {
                 </button>
             </div>
         </div>
-        <Footer />
-    </>
     ) : <Loading />
 };
 

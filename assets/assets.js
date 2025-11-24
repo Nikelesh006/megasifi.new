@@ -54,6 +54,9 @@ import banner1 from "./banner1.png";
 import banner2 from "./banner2.png";
 import banner3 from "./banner3.png";
 import banner4 from "./banner4.png";
+import footer_banner1 from "./footer_banner1.png";
+import footer_banner2 from "./footer_banner2.png";
+import featured1 from "./featured1.png";
 
 export const assets = {
   logo,
@@ -112,6 +115,9 @@ export const assets = {
   banner2,
   banner3,
   banner4,
+  footer_banner1,
+  footer_banner2,
+  featured1
 };
 
 export const BagIcon = () => {

@@ -44,6 +44,10 @@ export const AppContextProvider = (props) => {
     const fetchUserData = async () => {
         try{
 
+           console.log("User object from useUser:", user);
+           console.log("User publicMetadata:", user?.publicMetadata);
+           console.log("User role from metadata:", user?.publicMetadata?.role);
+
            if(user.publicMetadata.role === 'seller'){
               setIsSeller(true)
            }
@@ -54,7 +58,7 @@ export const AppContextProvider = (props) => {
 
            if(data.success){
             setUserData(data.user)
-            setCartItems(data.data.cartItems)
+            setCartItems(data.user?.cartItems || {})
 
            }else{
             toast.error(data.message)
@@ -105,7 +109,7 @@ export const AppContextProvider = (props) => {
             try{
             const token = await getToken()
             
-            await axios.put('/api/cart/update',cartData,{headers:{Authorization:`Bearer ${token}`}})
+            await axios.put('/api/cart/update',{cartData},{headers:{Authorization:`Bearer ${token}`}})
             toast.success("Item updated to cart")
             
             }catch(error){

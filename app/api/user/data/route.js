@@ -29,6 +29,14 @@ export async function GET(request) {
         console.warn("Failed to fetch user from Clerk", clerkError?.message || clerkError);
       }
 
+      const fallbackEmail =
+        clerkUser?.emailAddresses?.[0]?.emailAddress ||
+        (clerkUser?.username ? `${clerkUser.username}@placeholder.local` : `${userId}@placeholder.local`);
+
+      const fallbackImage =
+        clerkUser?.imageUrl ||
+        "https://via.placeholder.com/100x100.png?text=User";
+
       user = await User.create({
         _id: clerkUser?.id || userId,
         name:
@@ -36,8 +44,8 @@ export async function GET(request) {
           clerkUser?.username ||
           clerkUser?.emailAddresses?.[0]?.emailAddress ||
           "User",
-        email: clerkUser?.emailAddresses?.[0]?.emailAddress || "",
-        imageUrl: clerkUser?.imageUrl || "",
+        email: fallbackEmail,
+        imageUrl: fallbackImage,
         cartItems: {}
       });
     }
