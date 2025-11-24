@@ -9,7 +9,7 @@ const ProductCard = ({ product }) => {
     return (
         <div
             onClick={() => { router.push('/product/' + product._id); scrollTo(0, 0) }}
-            className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer group transition-all duration-300"
+            className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
         >
             {/* Image container with old money theme */}
             <div className="relative rounded-lg w-full h-52 flex items-center justify-center overflow-hidden group bg-old-cream hover:bg-old-light/60 transition-all duration-300">
@@ -86,7 +86,7 @@ const ProductCard = ({ product }) => {
                         )}
                     </p>
                     <button 
-                        className="max-sm:hidden px-4 py-1.5 text-old-olive border border-old-border rounded-full text-xs hover:bg-old-gold hover:text-old-cream hover:border-old-gold transition-all duration-300"
+                        className="max-sm:hidden px-4 py-1.5 text-rose-600 border border-rose-600 rounded-full text-xs hover:bg-rose-50 transition-colors"
                         onClick={(e) => {
                             e.stopPropagation();
                             addToCart(product._id);

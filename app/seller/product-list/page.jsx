@@ -179,7 +179,7 @@ const ProductList = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => router.push(`/product/${product._id}`)}
-                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-3 md:px-4 bg-orange-600 text-white text-sm rounded-md"
+                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-3 md:px-4 bg-rose-600 text-white text-sm rounded-md"
                         >
                           <span className="hidden md:block">Visit</span>
                           <Image

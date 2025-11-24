@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import ProductCard from './ProductCard';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
-import { Heart, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Heart, ShoppingCart, Sparkles } from 'lucide-react';
 import { addToWishlist, removeFromWishlist, isLiked } from '@/lib/wishlistManager';
 
-const HomeProducts = () => {
+const NewArrivals = () => {
   const { addToCart, router } = useAppContext();
   const [likedItems, setLikedItems] = useState(new Set());
 
   // Sync liked items with wishlist manager
   useEffect(() => {
-    // Update liked items state based on wishlist manager
     const updateLikedItems = () => {
       const newLikedItems = new Set();
-      popularProducts.forEach(product => {
+      newArrivalsProducts.forEach(product => {
         if (isLiked(product._id)) {
           newLikedItems.add(product._id);
         }
@@ -44,79 +44,79 @@ const HomeProducts = () => {
     }
   };
 
-  // Mock data for popular products - 8 products
-  const popularProducts = [
+  // Mock data for new arrivals - 8 products
+  const newArrivalsProducts = [
     {
-      _id: 'popular1',
-      name: 'Traditional Saree',
-      description: 'Elegant traditional silk saree',
-      image: [assets.saree_linen_image],
-      offerPrice: 89.99,
-      originalPrice: 129.99,
-      category: 'Women'
-    },
-    {
-      _id: 'popular2',
-      name: 'Classic Cotton Shirt',
-      description: 'Comfortable cotton shirt for daily wear',
+      _id: 'new1',
+      name: 'Modern Polo Shirt',
+      description: 'Stylish polo shirt with modern fit',
       image: [assets.shirt_img],
-      offerPrice: 34.99,
-      originalPrice: 54.99,
+      offerPrice: 42.99,
+      originalPrice: 59.99,
       category: 'Men'
     },
     {
-      _id: 'popular3',
-      name: 'Designer Blouse',
-      description: 'Stylish designer blouse',
-      image: [assets.saree_grey_image],
-      offerPrice: 44.99,
-      originalPrice: 69.99,
-      category: 'Women'
-    },
-    {
-      _id: 'popular4',
-      name: 'Formal Trousers',
-      description: 'Professional formal trousers',
-      image: [assets.pants_img],
-      offerPrice: 49.99,
-      originalPrice: 79.99,
-      category: 'Men'
-    },
-    {
-      _id: 'popular5',
-      name: 'Party Wear Saree',
-      description: 'Beautiful party wear saree',
-      image: [assets.saree_new2_image],
-      offerPrice: 119.99,
+      _id: 'new2',
+      name: 'Elegant Evening Gown',
+      description: 'Beautiful gown for special occasions',
+      image: [assets.dress_img],
+      offerPrice: 129.99,
       originalPrice: 189.99,
       category: 'Women'
     },
     {
-      _id: 'popular6',
-      name: 'Casual T-Shirt',
-      description: 'Comfortable casual t-shirt',
-      image: [assets.tshirt_img],
-      offerPrice: 24.99,
-      originalPrice: 39.99,
+      _id: 'new3',
+      name: 'Casual Chinos',
+      description: 'Comfortable chinos for everyday wear',
+      image: [assets.pants_img],
+      offerPrice: 49.99,
+      originalPrice: 74.99,
       category: 'Men'
     },
     {
-      _id: 'popular7',
-      name: 'Embroidered Kurti',
-      description: 'Traditional embroidered kurti',
-      image: [assets.saree_linen_image],
-      offerPrice: 54.99,
-      originalPrice: 84.99,
+      _id: 'new4',
+      name: 'Trendy Bomber Jacket',
+      description: 'Fashionable bomber jacket',
+      image: [assets.jacket_img],
+      offerPrice: 79.99,
+      originalPrice: 119.99,
+      category: 'Men'
+    },
+    {
+      _id: 'new5',
+      name: 'Floral Summer Top',
+      description: 'Light and airy summer top',
+      image: [assets.shirt_img],
+      offerPrice: 34.99,
+      originalPrice: 54.99,
       category: 'Women'
     },
     {
-      _id: 'popular8',
-      name: 'Denim Jeans',
-      description: 'Classic fit denim jeans',
-      image: [assets.jeans_img],
-      offerPrice: 59.99,
-      originalPrice: 89.99,
+      _id: 'new6',
+      name: 'Athletic Leggings',
+      description: 'Comfortable leggings for workouts',
+      image: [assets.pants_img],
+      offerPrice: 29.99,
+      originalPrice: 44.99,
+      category: 'Women'
+    },
+    {
+      _id: 'new7',
+      name: 'Smart Casual Blazer',
+      description: 'Versatile blazer for work and leisure',
+      image: [assets.jacket_img],
+      offerPrice: 99.99,
+      originalPrice: 149.99,
       category: 'Men'
+    },
+    {
+      _id: 'new8',
+      name: 'Bohemian Maxi Dress',
+      description: 'Free-spirited bohemian style dress',
+      image: [assets.dress_img],
+      offerPrice: 69.99,
+      originalPrice: 99.99,
+      category: 'Women'
     }
   ];
 
@@ -128,20 +128,20 @@ const HomeProducts = () => {
   return (
     <div className="flex flex-col items-center pt-14">
       <div className="flex items-center gap-2 mb-6">
-        <TrendingUp className="w-6 h-6 text-rose-600" />
-        <h2 className="text-2xl font-medium text-rose-800">Popular Products</h2>
-        <TrendingUp className="w-6 h-6 text-rose-600" />
+        <Sparkles className="w-6 h-6 text-rose-600" />
+        <h2 className="text-2xl font-medium text-rose-800">New Arrivals</h2>
+        <Sparkles className="w-6 h-6 text-rose-600" />
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
-        {popularProducts.map((product) => (
+        {newArrivalsProducts.map((product) => (
           <div
             key={product._id}
             className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
             onClick={() => router.push('/product/' + product._id)}
           >
             {/* Image container */}
-            <div className="relative w-full h-48 flex items-center justify-center overflow-hidden rounded-t-lg bg-gradient-to-br from-gray-50 to-white">
+            <div className="relative w-full h-48 flex items-center justify-center overflow-hidden rounded-t-lg bg-gradient-to-br from-rose-50 to-white">
               <img
                 src={product.image[0]}
                 alt={product.name}
@@ -162,10 +162,10 @@ const HomeProducts = () => {
                 />
               </button>
               
-              {/* Popular badge */}
-              <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
-                <TrendingUp className="w-3 h-3" />
-                HOT
+              {/* New badge */}
+              <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-600 to-rose-500 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
+                <Sparkles className="w-3 h-3" />
+                NEW
               </div>
             </div>
 
@@ -205,11 +205,11 @@ const HomeProducts = () => {
         onClick={() => router.push('/all-products')}
         className="px-8 py-2.5 border border-rose-600 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-2"
       >
-        <TrendingUp className="w-4 h-4" />
-        See More Products
+        <Sparkles className="w-4 h-4" />
+        Explore New Arrivals
       </button>
     </div>
   );
 };
 
-export default HomeProducts;
+export default NewArrivals;
