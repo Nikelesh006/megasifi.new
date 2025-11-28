@@ -3,45 +3,13 @@ import ProductCard from './ProductCard';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
 import { Heart, ShoppingCart, Sparkles } from 'lucide-react';
-import { addToWishlist, removeFromWishlist, isLiked } from '@/lib/wishlistManager';
 
 const NewArrivals = () => {
-  const { addToCart, router } = useAppContext();
-  const [likedItems, setLikedItems] = useState(new Set());
+  const { addToCart, router, isLiked, toggleLike } = useAppContext();
 
-  // Sync liked items with wishlist manager
-  useEffect(() => {
-    const updateLikedItems = () => {
-      const newLikedItems = new Set();
-      newArrivalsProducts.forEach(product => {
-        if (isLiked(product._id)) {
-          newLikedItems.add(product._id);
-        }
-      });
-      setLikedItems(newLikedItems);
-    };
-
-    updateLikedItems();
-  }, []);
-
-  const toggleLike = (productId, e) => {
+  const handleAddToCart = (productId, e) => {
     e.stopPropagation();
-    
-    if (isLiked(productId)) {
-      removeFromWishlist(productId);
-      setLikedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(productId);
-        return newSet;
-      });
-    } else {
-      addToWishlist(productId);
-      setLikedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.add(productId);
-        return newSet;
-      });
-    }
+    addToCart(productId);
   };
 
   // Mock data for new arrivals - 8 products
@@ -120,11 +88,6 @@ const NewArrivals = () => {
     }
   ];
 
-  const handleAddToCart = (productId, e) => {
-    e.stopPropagation();
-    addToCart(productId);
-  };
-
   return (
     <div className="flex flex-col items-center pt-14">
       <div className="flex items-center gap-2 mb-6">
@@ -133,11 +96,11 @@ const NewArrivals = () => {
         <Sparkles className="w-6 h-6 text-rose-600" />
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
         {newArrivalsProducts.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
+            className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-rose-200 hover:border-rose-400 transform hover:-translate-y-1"
             onClick={() => router.push('/product/' + product._id)}
           >
             {/* Image container */}
@@ -155,7 +118,7 @@ const NewArrivals = () => {
               >
                 <Heart 
                   className={`w-4 h-4 transition-colors ${
-                    likedItems.has(product._id) 
+                    isLiked(product._id) 
                       ? 'text-rose-600 fill-current' 
                       : 'text-gray-400 hover:text-rose-600'
                   }`}
@@ -171,7 +134,7 @@ const NewArrivals = () => {
 
             {/* Product info */}
             <div className="w-full p-3 flex-1 flex flex-col">
-              <h3 className="text-sm font-medium text-gray-800 truncate group-hover:text-rose-600 transition-colors">
+              <h3 className="text-sm font-medium text-rose-700 truncate group-hover:text-rose-600 transition-colors">
                 {product.name}
               </h3>
               <p className="text-xs text-gray-500 truncate mt-1 flex-1">
@@ -180,7 +143,7 @@ const NewArrivals = () => {
               
               {/* Price */}
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-base font-semibold text-rose-600">
+                <span className="text-base font-semibold text-rose-700">
                   ${product.offerPrice}
                 </span>
                 <span className="text-xs text-gray-400 line-through">
@@ -190,7 +153,7 @@ const NewArrivals = () => {
               
               {/* Add to cart button */}
               <button
-                className="w-full mt-3 px-4 py-2 border border-rose-600 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2"
                 onClick={(e) => handleAddToCart(product._id, e)}
               >
                 <ShoppingCart className="w-4 h-4" />

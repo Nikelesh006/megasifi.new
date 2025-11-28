@@ -119,7 +119,7 @@ export default function WomenPage() {
               </p>
             )}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 w-full max-w-6xl mx-auto">
             {filteredWomenProducts.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}

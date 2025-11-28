@@ -1,35 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { assets } from '@/assets/assets';
-import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
-import {
-  addToWishlist,
-  removeFromWishlist,
-  isLiked,
-} from '@/lib/wishlistManager';
+import { Heart, ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
 
 const ProductCard = ({ product }) => {
-  const { currency, router, addToCart } = useAppContext();
+  const { currency, router, addToCart, isLiked, toggleLike } = useAppContext();
   const [liked, setLiked] = useState(false);
 
-  // Sync local liked state with wishlist storage
+  // Sync local liked state with global state
   useEffect(() => {
     if (product?._id) {
       setLiked(isLiked(product._id));
     }
-  }, [product?._id]);
+  }, [product?._id, isLiked]);
 
   const handleToggleLike = (e) => {
     e.stopPropagation();
     if (!product?._id) return;
 
-    if (isLiked(product._id)) {
-      removeFromWishlist(product._id);
-      setLiked(false);
-    } else {
-      addToWishlist(product._id);
-      setLiked(true);
-    }
+    // Use global toggleLike function
+    toggleLike(product._id);
   };
 
   return (
@@ -38,91 +29,70 @@ const ProductCard = ({ product }) => {
         router.push('/product/' + product._id);
         scrollTo(0, 0);
       }}
-      className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
+      className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-rose-200 hover:border-rose-400 transform hover:-translate-y-1"
     >
       {/* Image container */}
-      <div className="relative rounded-lg w-full h-52 flex items-center justify-center overflow-hidden group bg-old-cream hover:bg-old-light/60 transition-all duration-300">
-        <div className="absolute inset-0 bg-old-gold/0 group-hover:bg-old-gold/5 transition-all duration-300 z-0"></div>
+      <div className="relative w-full h-48 flex items-center justify-center overflow-hidden rounded-t-lg bg-gradient-to-br from-gray-50 to-white">
+        <Image
+          src={product.image[0]}
+          alt={product.name}
+          className="object-contain max-h-full max-w-full p-4 transition-transform duration-300 group-hover:scale-105"
+          width={400}
+          height={400}
+          style={{
+            width: 'auto',
+            height: 'auto',
+            maxWidth: '100%',
+            maxHeight: '100%',
+          }}
+        />
 
-        <div className="relative w-full h-full flex items-center justify-center p-3 group-hover:p-4 transition-all duration-300">
-          <Image
-            src={product.image[0]}
-            alt={product.name}
-            className="transition-all duration-300 object-contain max-h-full max-w-full z-10"
-            width={400}
-            height={400}
-            style={{
-              width: 'auto',
-              height: 'auto',
-              maxWidth: '100%',
-              maxHeight: '100%',
-            }}
-          />
-        </div>
-
+        {/* Like button */}
         <button
-          className="absolute top-2 right-2 bg-old-cream/80 group-hover:bg-old-cream p-2 rounded-full shadow-sm group-hover:shadow-md z-20 transition-all duration-300 transform hover:scale-110"
+          className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-rose-50 transition-all duration-300 transform hover:scale-110"
           onClick={handleToggleLike}
         >
-          <Image
-            className="h-3 w-3 opacity-70 group-hover:opacity-100 transition-opacity duration-300"
-            src={liked ? assets.heart_filled_icon || assets.heart_icon : assets.heart_icon}
-            alt="heart_icon"
+          <Heart
+            className={`w-4 h-4 transition-colors ${
+              liked
+                ? 'text-rose-600 fill-current'
+                : 'text-gray-400 hover:text-rose-600'
+            }`}
           />
         </button>
+
       </div>
 
       {/* Product info */}
-      <div className="w-full px-2 group-hover:px-3 transition-all duration-300">
-        <p className="md:text-base font-medium pt-2 w-full truncate group-hover:text-old-gold transition-colors duration-300">
+      <div className="w-full p-3 flex-1 flex flex-col">
+        <h3 className="text-sm font-medium text-rose-700 truncate group-hover:text-rose-600 transition-colors">
           {product.name}
-        </p>
-        <p className="w-full text-xs text-old-muted max-sm:hidden truncate mt-0.5">
+        </h3>
+        <p className="text-xs text-gray-500 truncate mt-1 flex-1">
           {product.description}
         </p>
-      </div>
 
-      {/* Price and action */}
-      <div className="w-full px-2 group-hover:px-3 transition-all duration-300">
-        <div className="flex items-center gap-2">
-          <p className="text-xs text-old-olive">{4.5}</p>
-          <div className="flex items-center gap-0.5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Image
-                key={index}
-                className="h-3 w-3"
-                src={
-                  index < Math.floor(4)
-                    ? assets.star_icon
-                    : assets.star_dull_icon
-                }
-                alt="star_icon"
-              />
-            ))}
-          </div>
+        {/* Price */}
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-base font-semibold text-rose-700">
+            ${product.offerPrice}
+          </span>
+          <span className="text-xs text-gray-400 line-through">
+            ${product.originalPrice}
+          </span>
         </div>
 
-        <div className="flex items-end justify-between w-full mt-1.5">
-          <p className="text-base font-medium text-old-olive">
-            {currency}
-            {product.offerPrice}
-            {product.originalPrice && (
-              <span className="ml-1 text-xs text-old-muted line-through">
-                {currency}
-                {product.originalPrice}
-              </span>
-            )}
-          </p>
-          <button
-            className="max-sm:hidden px-4 py-1.5 text-rose-600 border border-rose-600 rounded-full text-xs hover:bg-rose-50 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(product._id);
-            }}
-          >
-            Add to Cart
-          </button>
-        </div>
+        {/* Add to cart button */}
+        <button
+          className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2"
+          onClick={(e) => {
+            e.stopPropagation();
+            addToCart(product._id);
+          }}
+        >
+          <ShoppingCart className="w-4 h-4" />
+          Add to Cart
+        </button>
       </div>
     </div>
   );
