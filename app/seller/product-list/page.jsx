@@ -143,6 +143,9 @@ const ProductList = () => {
                   <th className="px-4 py-3 font-medium truncate max-sm:hidden">
                     Category
                   </th>
+                  <th className="px-4 py-3 font-medium truncate max-sm:hidden">
+                    List Item
+                  </th>
                   <th className="px-4 py-3 font-medium truncate">Price</th>
                   <th className="px-4 py-3 font-medium text-center max-sm:hidden w-48">
                     Action
@@ -173,6 +176,9 @@ const ProductList = () => {
                     </td>
                     <td className="px-4 py-3 max-sm:hidden">
                       {product.category}
+                    </td>
+                    <td className="px-4 py-3 max-sm:hidden">
+                      {product.subCategory}
                     </td>
                     <td className="px-4 py-3">${product.offerPrice}</td>
                     <td className="px-4 py-3 max-sm:hidden w-48">
