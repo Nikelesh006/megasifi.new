@@ -1,48 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
 import { Heart, ShoppingCart, TrendingUp } from 'lucide-react';
-import { addToWishlist, removeFromWishlist, isLiked } from '@/lib/wishlistManager';
 
 const HomeProducts = () => {
-  const { addToCart, router } = useAppContext();
-  const [likedItems, setLikedItems] = useState(new Set());
-
-  // Sync liked items with wishlist manager
-  useEffect(() => {
-    // Update liked items state based on wishlist manager
-    const updateLikedItems = () => {
-      const newLikedItems = new Set();
-      popularProducts.forEach(product => {
-        if (isLiked(product._id)) {
-          newLikedItems.add(product._id);
-        }
-      });
-      setLikedItems(newLikedItems);
-    };
-
-    updateLikedItems();
-  }, []);
-
-  const toggleLike = (productId, e) => {
-    e.stopPropagation();
-    
-    if (isLiked(productId)) {
-      removeFromWishlist(productId);
-      setLikedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(productId);
-        return newSet;
-      });
-    } else {
-      addToWishlist(productId);
-      setLikedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.add(productId);
-        return newSet;
-      });
-    }
-  };
+  const { addToCart, router, toggleLike, isLiked } = useAppContext();
 
   // Mock data for popular products - 8 products
   const popularProducts = [
@@ -53,7 +15,7 @@ const HomeProducts = () => {
       image: [assets.saree_linen_image],
       offerPrice: 89.99,
       originalPrice: 129.99,
-      category: 'Women'
+      category: 'Women',
     },
     {
       _id: 'popular2',
@@ -62,7 +24,7 @@ const HomeProducts = () => {
       image: [assets.shirt_img],
       offerPrice: 34.99,
       originalPrice: 54.99,
-      category: 'Men'
+      category: 'Men',
     },
     {
       _id: 'popular3',
@@ -71,7 +33,7 @@ const HomeProducts = () => {
       image: [assets.saree_grey_image],
       offerPrice: 44.99,
       originalPrice: 69.99,
-      category: 'Women'
+      category: 'Women',
     },
     {
       _id: 'popular4',
@@ -80,7 +42,7 @@ const HomeProducts = () => {
       image: [assets.pants_img],
       offerPrice: 49.99,
       originalPrice: 79.99,
-      category: 'Men'
+      category: 'Men',
     },
     {
       _id: 'popular5',
@@ -89,7 +51,7 @@ const HomeProducts = () => {
       image: [assets.saree_new2_image],
       offerPrice: 119.99,
       originalPrice: 189.99,
-      category: 'Women'
+      category: 'Women',
     },
     {
       _id: 'popular6',
@@ -98,7 +60,7 @@ const HomeProducts = () => {
       image: [assets.tshirt_img],
       offerPrice: 24.99,
       originalPrice: 39.99,
-      category: 'Men'
+      category: 'Men',
     },
     {
       _id: 'popular7',
@@ -107,7 +69,7 @@ const HomeProducts = () => {
       image: [assets.saree_linen_image],
       offerPrice: 54.99,
       originalPrice: 84.99,
-      category: 'Women'
+      category: 'Women',
     },
     {
       _id: 'popular8',
@@ -116,14 +78,9 @@ const HomeProducts = () => {
       image: [assets.jeans_img],
       offerPrice: 59.99,
       originalPrice: 89.99,
-      category: 'Men'
-    }
+      category: 'Men',
+    },
   ];
-
-  const handleAddToCart = (productId, e) => {
-    e.stopPropagation();
-    addToCart(productId);
-  };
 
   return (
     <div className="flex flex-col items-center pt-14">
@@ -132,7 +89,7 @@ const HomeProducts = () => {
         <h2 className="text-2xl font-medium text-rose-800">Popular Products</h2>
         <TrendingUp className="w-6 h-6 text-rose-600" />
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
         {popularProducts.map((product) => (
           <div
@@ -147,21 +104,24 @@ const HomeProducts = () => {
                 alt={product.name}
                 className="object-contain max-h-full max-w-full p-4 transition-transform duration-300 group-hover:scale-105"
               />
-              
+
               {/* Like button */}
               <button
                 className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-rose-50 transition-all duration-300 transform hover:scale-110"
-                onClick={(e) => toggleLike(product._id, e)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleLike(product._id);
+                }}
               >
-                <Heart 
+                <Heart
                   className={`w-4 h-4 transition-colors ${
-                    likedItems.has(product._id) 
-                      ? 'text-rose-600 fill-current' 
+                    isLiked(product._id)
+                      ? 'text-rose-600 fill-current'
                       : 'text-gray-400 hover:text-rose-600'
                   }`}
                 />
               </button>
-              
+
               {/* Popular badge */}
               <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
                 <TrendingUp className="w-3 h-3" />
@@ -177,7 +137,7 @@ const HomeProducts = () => {
               <p className="text-xs text-gray-500 truncate mt-1 flex-1">
                 {product.description}
               </p>
-              
+
               {/* Price */}
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-base font-semibold text-rose-600">
@@ -187,11 +147,14 @@ const HomeProducts = () => {
                   ${product.originalPrice}
                 </span>
               </div>
-              
+
               {/* Add to cart button */}
               <button
                 className="w-full mt-3 px-4 py-2 border border-rose-600 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors flex items-center justify-center gap-2"
-                onClick={(e) => handleAddToCart(product._id, e)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart(product._id);
+                }}
               >
                 <ShoppingCart className="w-4 h-4" />
                 Add to Cart
@@ -200,8 +163,8 @@ const HomeProducts = () => {
           </div>
         ))}
       </div>
-      
-      <button 
+
+      <button
         onClick={() => router.push('/all-products')}
         className="px-8 py-2.5 border border-rose-600 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-2"
       >

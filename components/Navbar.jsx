@@ -11,7 +11,7 @@ import { Home, ShoppingBag, Heart, Search, User, LogOut, Box } from "lucide-reac
 
 const Navbar = () => {
 
-  const { isSeller, router, user } = useAppContext();
+  const { isSeller, router, user, searchQuery, setSearchQuery, setSubCategoryFilter, clearFilters } = useAppContext();
   const { openSignIn } = useClerk()
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -55,8 +55,14 @@ const Navbar = () => {
           FAQ
         </Link>
 
-        {isSeller && <button onClick={() => router.push('/seller')} className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition">Seller Dashboard</button>}
-
+        {user && isSeller && (
+          <button
+            onClick={() => router.push('/seller')}
+            className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
+          >
+            Seller Dashboard
+          </button>
+        )}
       </div>
 
       <div className="hidden md:flex items-center gap-5">
@@ -64,10 +70,50 @@ const Navbar = () => {
         <div className="relative -ml-4 lg:-ml-6">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search by name, category, or list item..."
             className="w-60 lg:w-72 xl:w-80 px-4 py-1.5 pr-10 rounded-full border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent text-sm"
+            value={searchQuery}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchQuery(value);
+              if (value) {
+                setSubCategoryFilter('All');
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const value = e.currentTarget.value;
+                setSearchQuery(value);
+                if (value) {
+                  setSubCategoryFilter('All');
+                }
+              }
+            }}
           />
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-7 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              const value = searchQuery || '';
+              setSearchQuery(value);
+              if (value) {
+                setSubCategoryFilter('All');
+              }
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+            aria-label="Search"
+          >
+            <Search className="w-4 h-4 text-gray-400" />
+          </button>
         </div>
 
         {/* Liked Items */}
@@ -96,8 +142,15 @@ const Navbar = () => {
               aria-haspopup="true"
               aria-expanded={isProfileMenuOpen}
             >
-              <User className="w-5 h-5 text-rose-700" />
+              <Image
+                src={user.imageUrl}
+                alt="Profile"
+                width={32}
+                height={32}
+                className="w-8 h-8 rounded-full object-cover"
+              />
             </button>
+
             <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 ${isProfileMenuOpen ? 'block' : 'hidden'}`}>
               <button
                 onClick={() => handleProfileNavigation('/profile')}
@@ -133,7 +186,15 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center md:hidden gap-3">
-        {isSeller && <button onClick={() => router.push('/seller')} className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition">Seller Dashboard</button>}
+        {user && isSeller && (
+          <button
+            onClick={() => router.push('/seller')}
+            className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
+          >
+            Seller Dashboard
+          </button>
+        )}
+        
         { 
           user
           ?<>
