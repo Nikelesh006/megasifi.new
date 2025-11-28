@@ -29,6 +29,12 @@ export async function POST(request){
         let amount = 0
         const orderItems = []
         for (const item of items) {
+            // Skip mock products (IDs that don't look like ObjectIds)
+            if (!item.product || !item.product.match(/^[0-9a-fA-F]{24}$/)) {
+                console.log(`Skipping mock product: ${item.product}`);
+                continue;
+            }
+            
             const product = await Product.findById(item.product)
             if (!product) continue
 

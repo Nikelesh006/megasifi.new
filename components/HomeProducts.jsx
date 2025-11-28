@@ -90,11 +90,11 @@ const HomeProducts = () => {
         <TrendingUp className="w-6 h-6 text-rose-600" />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
         {popularProducts.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
+            className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-rose-200 hover:border-rose-400 transform hover:-translate-y-1"
             onClick={() => router.push('/product/' + product._id)}
           >
             {/* Image container */}
@@ -122,16 +122,11 @@ const HomeProducts = () => {
                 />
               </button>
 
-              {/* Popular badge */}
-              <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
-                <TrendingUp className="w-3 h-3" />
-                HOT
-              </div>
             </div>
 
             {/* Product info */}
             <div className="w-full p-3 flex-1 flex flex-col">
-              <h3 className="text-sm font-medium text-gray-800 truncate group-hover:text-rose-600 transition-colors">
+              <h3 className="text-sm font-medium text-rose-700 truncate group-hover:text-rose-600 transition-colors">
                 {product.name}
               </h3>
               <p className="text-xs text-gray-500 truncate mt-1 flex-1">
@@ -140,7 +135,7 @@ const HomeProducts = () => {
 
               {/* Price */}
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-base font-semibold text-rose-600">
+                <span className="text-base font-semibold text-rose-700">
                   ${product.offerPrice}
                 </span>
                 <span className="text-xs text-gray-400 line-through">
@@ -150,7 +145,7 @@ const HomeProducts = () => {
 
               {/* Add to cart button */}
               <button
-                className="w-full mt-3 px-4 py-2 border border-rose-600 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2"
                 onClick={(e) => {
                   e.stopPropagation();
                   addToCart(product._id);
