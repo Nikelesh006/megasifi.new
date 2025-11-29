@@ -20,7 +20,11 @@ const AddProduct = () => {
 
   const menSubCategories = ['T-Shirts', 'Shirts', 'Pants', 'Jeans', 'Shorts', 'Jackets'];
   const womenSubCategories = ['Tops', 'Dresses', 'Jeans', 'Skirts', 'Jackets', 'Activewear'];
-  const currentSubCategories = category === 'Women' ? womenSubCategories : menSubCategories;
+  const homeSubCategories = ['Popular Products', 'Special Offers', 'New Arrivals'];
+
+  const currentSubCategories = category === 'Women' ? womenSubCategories : 
+                              category === 'Home' ? homeSubCategories : 
+                              menSubCategories;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -134,11 +138,18 @@ const AddProduct = () => {
               onChange={(e) => {
                 const value = e.target.value;
                 setCategory(value);
-                setSubCategory(value === 'Women' ? 'Tops' : 'T-Shirts');
+                if (value === 'Women') {
+                  setSubCategory('Tops');
+                } else if (value === 'Home') {
+                  setSubCategory('Popular Products');
+                } else {
+                  setSubCategory('T-Shirts');
+                }
               }}
             >
               <option value="Men">Men</option>
               <option value="Women">Women</option>
+              <option value="Home">Home</option>
             </select>
           </div>
           <div className="flex flex-col gap-1 w-32">
