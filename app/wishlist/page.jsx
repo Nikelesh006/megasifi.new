@@ -1,29 +1,65 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import Loading from '@/components/Loading';
 import ProductCard from '@/components/ProductCard';
+import {
+  getWishlistItems,
+  removeFromWishlist,
+  isLiked,
+} from '@/lib/wishlistManager';
 
 const LikedProducts = () => {
-  const { user, products, router, likedItems, toggleLike } = useAppContext();
+  const { user, products, router } = useAppContext();
 
-  const [loading, setLoading] = React.useState(false); // kept for structure
+  const [likedProducts, setLikedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Map liked IDs to actual products
-  const likedProducts = useMemo(
-    () => products.filter((p) => likedItems.includes(p._id)),
-    [products, likedItems]
-  );
+  const fetchLikedProducts = () => {
+    try {
+      setLoading(true);
 
-  if (!user) {
-    return (
-      <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen bg-white">
-        <div className="space-y-5">
-          <div className="flex items-center gap-2 mt-6">
-            <Heart className="w-6 h-6 text-rose-600" />
-            <h2 className="text-lg font-medium">Liked Products</h2>
-          </div>
+      const likedIds = getWishlistItems();
+      const liked = products.filter((product) =>
+        likedIds.includes(product._id)
+      );
+
+      setLikedProducts(liked);
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch liked products:', error);
+      setLikedProducts([]);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchLikedProducts();
+    } else {
+      setLoading(false);
+    }
+  }, [user, products]);
+
+  const removeFromLiked = (productId) => {
+    if (isLiked(productId)) {
+      removeFromWishlist(productId);
+    }
+    setLikedProducts((prev) =>
+      prev.filter((product) => product._id !== productId)
+    );
+  };
+
+  return (
+    <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen bg-white">
+      <div className="space-y-5">
+        <div className="flex items-center gap-2 mt-6">
+          <Heart className="w-6 h-6 text-rose-600" />
+          <h2 className="text-lg font-medium">Liked Products</h2>
+        </div>
+
+        {!user ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-500">
             <Heart className="w-16 h-16 text-rose-300 mb-4" />
             <p className="text-lg mb-2">
@@ -36,24 +72,9 @@ const LikedProducts = () => {
               Sign In
             </button>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  return (
-    <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen bg-white">
-      <div className="space-y-5">
-        <div className="flex items-center gap-2 mt-6">
-          <Heart className="w-6 h-6 text-rose-600" />
-          <h2 className="text-lg font-medium">Liked Products</h2>
-        </div>
-
-        {likedProducts.length === 0 ? (
+        ) : loading ? (
+          <Loading />
+        ) : likedProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-500">
             <Heart className="w-16 h-16 text-rose-300 mb-4" />
             <p className="text-lg mb-2">No liked products yet</p>
@@ -73,7 +94,7 @@ const LikedProducts = () => {
               <div key={product._id} className="relative group">
                 <ProductCard product={product} />
                 <button
-                  onClick={() => toggleLike(product._id)}
+                  onClick={() => removeFromLiked(product._id)}
                   className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-rose-50 transition-colors opacity-0 group-hover:opacity-100 z-10"
                   aria-label="Remove from liked products"
                 >
