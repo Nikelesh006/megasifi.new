@@ -11,8 +11,14 @@ import { Home, ShoppingBag, Heart, Search, User, LogOut, Box } from "lucide-reac
 
 const Navbar = () => {
 
-  const { isSeller, router, user, searchQuery, setSearchQuery, setSubCategoryFilter, clearFilters } = useAppContext();
+  const { isSeller, router, user, searchQuery, setSearchQuery, setSubCategoryFilter, clearFilters, getCartCount, cartItems } = useAppContext();
   const { openSignIn } = useClerk()
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const count = getCartCount();
+    setCartCount(count);
+  }, [cartItems, getCartCount]);
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
@@ -130,7 +136,7 @@ const Navbar = () => {
           onClick={() => router.push('/cart')}
         >
           <ShoppingBag className="w-5 h-5 text-rose-700" />
-          <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+          <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>
         </button>
 
         {/* Profile */}

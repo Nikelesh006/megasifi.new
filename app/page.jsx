@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <div className="px-6 md:px-16 lg:px-32">
       <HeaderSlider />
-      <HomeProducts />
+      <HomeProducts category="Popular Products" />
       <SpecialOffers />
       <NewArrivals />
       <FeaturedProduct />

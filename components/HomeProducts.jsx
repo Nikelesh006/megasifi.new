@@ -1,97 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
 import { Heart, ShoppingCart, TrendingUp } from 'lucide-react';
 
-const HomeProducts = () => {
-  const { addToCart, router, toggleLike, isLiked } = useAppContext();
+const HomeProducts = ({ category = 'Popular Products' }) => {
+  const { addToCart, router, toggleLike, isLiked, products, getCartCount, cartItems } = useAppContext();
+  const [cartCount, setCartCount] = useState(0);
 
-  // Mock data for popular products - 8 products
-  const popularProducts = [
-    {
-      _id: 'popular1',
-      name: 'Traditional Saree',
-      description: 'Elegant traditional silk saree',
-      image: [assets.saree_linen_image],
-      offerPrice: 89.99,
-      originalPrice: 129.99,
-      category: 'Women',
-    },
-    {
-      _id: 'popular2',
-      name: 'Classic Cotton Shirt',
-      description: 'Comfortable cotton shirt for daily wear',
-      image: [assets.shirt_img],
-      offerPrice: 34.99,
-      originalPrice: 54.99,
-      category: 'Men',
-    },
-    {
-      _id: 'popular3',
-      name: 'Designer Blouse',
-      description: 'Stylish designer blouse',
-      image: [assets.saree_grey_image],
-      offerPrice: 44.99,
-      originalPrice: 69.99,
-      category: 'Women',
-    },
-    {
-      _id: 'popular4',
-      name: 'Formal Trousers',
-      description: 'Professional formal trousers',
-      image: [assets.pants_img],
-      offerPrice: 49.99,
-      originalPrice: 79.99,
-      category: 'Men',
-    },
-    {
-      _id: 'popular5',
-      name: 'Party Wear Saree',
-      description: 'Beautiful party wear saree',
-      image: [assets.saree_new2_image],
-      offerPrice: 119.99,
-      originalPrice: 189.99,
-      category: 'Women',
-    },
-    {
-      _id: 'popular6',
-      name: 'Casual T-Shirt',
-      description: 'Comfortable casual t-shirt',
-      image: [assets.tshirt_img],
-      offerPrice: 24.99,
-      originalPrice: 39.99,
-      category: 'Men',
-    },
-    {
-      _id: 'popular7',
-      name: 'Embroidered Kurti',
-      description: 'Traditional embroidered kurti',
-      image: [assets.saree_linen_image],
-      offerPrice: 54.99,
-      originalPrice: 84.99,
-      category: 'Women',
-    },
-    {
-      _id: 'popular8',
-      name: 'Denim Jeans',
-      description: 'Classic fit denim jeans',
-      image: [assets.jeans_img],
-      offerPrice: 59.99,
-      originalPrice: 89.99,
-      category: 'Men',
-    },
-  ];
+  useEffect(() => {
+    const count = getCartCount();
+    setCartCount(count);
+  }, [cartItems, getCartCount]);
+
+  // Filter products based on category and subCategory
+  const filteredProducts = products.filter(product => 
+    product.category === 'Home' && product.subCategory === category
+  );
+
+  if (filteredProducts.length === 0) {
+    return (
+      <div className="flex flex-col items-center pt-14">
+        <div className="flex items-center gap-2 mb-6">
+          <TrendingUp className="w-6 h-6 text-rose-600" />
+          <h2 className="text-2xl font-medium text-rose-800">{category}</h2>
+          <TrendingUp className="w-6 h-6 text-rose-600" />
+        </div>
+        <p className="text-gray-500 text-center py-8">No products available in this category.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center pt-14">
       <div className="flex items-center gap-2 mb-6">
         <TrendingUp className="w-6 h-6 text-rose-600" />
-        <h2 className="text-2xl font-medium text-rose-800">Popular Products</h2>
+        <h2 className="text-2xl font-medium text-rose-800">{category}</h2>
         <TrendingUp className="w-6 h-6 text-rose-600" />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
-        {popularProducts.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product._id}
             className="flex flex-col items-start gap-2 cursor-pointer group transition-all duration-300 bg-white rounded-lg shadow-sm hover:shadow-lg hover:shadow-rose-100 border border-rose-200 hover:border-rose-400 transform hover:-translate-y-1"
@@ -138,14 +86,16 @@ const HomeProducts = () => {
                 <span className="text-base font-semibold text-rose-700">
                   ${product.offerPrice}
                 </span>
-                <span className="text-xs text-gray-400 line-through">
-                  ${product.originalPrice}
-                </span>
+                {product.price && product.price > product.offerPrice && (
+                  <span className="text-xs text-gray-400 line-through">
+                    ${product.price}
+                  </span>
+                )}
               </div>
 
               {/* Add to cart button */}
               <button
-                className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2 relative"
                 onClick={(e) => {
                   e.stopPropagation();
                   addToCart(product._id);
@@ -153,6 +103,12 @@ const HomeProducts = () => {
               >
                 <ShoppingCart className="w-4 h-4" />
                 Add to Cart
+                
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                    {cartCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
