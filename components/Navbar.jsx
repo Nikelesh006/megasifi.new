@@ -7,13 +7,16 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, useUser, SignOutButton } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
-import { Home, ShoppingBag, Heart, Search, User, LogOut, Box } from "lucide-react";
+import { Home, ShoppingBag, Heart, Search, User, LogOut, Box, Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
 
   const { isSeller, router, user, searchQuery, setSearchQuery, setSubCategoryFilter, clearFilters, getCartCount, cartItems } = useAppContext();
   const { openSignIn } = useClerk()
   const [cartCount, setCartCount] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const count = getCartCount();
@@ -39,193 +42,455 @@ const Navbar = () => {
     router.push(path);
   };
 
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleMobileLinkClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <nav className="flex items-center justify-between px-4 md:px-10 lg:px-16 py-2.5 bg-gradient-to-r from-rose-100 to-rose-50 border-b border-rose-200 text-rose-800 shadow-sm">
-      <Image
-        className="cursor-pointer w-28 md:w-32"
-        onClick={() => router.push('/')}
-        src={assets.logo_maroon_megasifi}
-        alt="logo"
-      />
-      <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
-        <Link href="/" className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
-          Home
-        </Link>
-        <Link href="/men" className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
-          Men
-        </Link>
-        <Link href="/women" className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
-          Women
-        </Link>
-        <Link href="/faq" className="hover:text-rose-300 hover:border-b-2 hover:border-rose-300 pb-1 transition-colors duration-200 ease-in-out">
-          FAQ
-        </Link>
+    <div className="relative">
+      <nav className="flex items-center justify-between px-4 md:px-10 lg:px-16 py-2.5 bg-gradient-to-r from-rose-100 to-rose-50 border-b border-rose-200 text-rose-800 shadow-sm">
+        <Image
+          className="cursor-pointer w-28 md:w-32"
+          onClick={() => router.push('/')}
+          src={assets.logo_maroon_megasifi}
+          alt="logo"
+        />
 
-        {user && isSeller && (
-          <button
-            onClick={() => router.push('/seller')}
-            className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
-          >
-            Seller Dashboard
-          </button>
-        )}
-      </div>
-
-      <div className="hidden md:flex items-center gap-5">
-        {/* Search Bar */}
-        <div className="relative -ml-4 lg:-ml-6">
-          <input
-            type="text"
-            placeholder="Search by name, category, or list item..."
-            className="w-60 lg:w-72 xl:w-80 px-4 py-1.5 pr-10 rounded-full border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent text-sm"
-            value={searchQuery}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearchQuery(value);
-              if (value) {
-                setSubCategoryFilter('All');
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                const value = e.currentTarget.value;
+        {/* Mobile Search Bar - Only visible on mobile */}
+        <div className="flex-1 mx-3 md:hidden">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full px-3 py-1.5 pr-8 rounded-full border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent text-sm"
+              value={searchQuery}
+              onChange={(e) => {
+                const value = e.target.value;
                 setSearchQuery(value);
                 if (value) {
                   setSubCategoryFilter('All');
                 }
-              }
-            }}
-          />
-          {searchQuery && (
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const value = e.currentTarget.value;
+                  setSearchQuery(value);
+                  if (value) {
+                    setSubCategoryFilter('All');
+                  }
+                }
+              }}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
             <button
               type="button"
-              onClick={() => setSearchQuery('')}
-              className="absolute right-7 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
-              aria-label="Clear search"
+              onClick={() => {
+                const value = searchQuery || '';
+                setSearchQuery(value);
+                if (value) {
+                  setSubCategoryFilter('All');
+                }
+              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 transform"
+              aria-label="Search"
             >
-              ×
+              <Search className="w-4 h-4 text-gray-400" />
             </button>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              const value = searchQuery || '';
-              setSearchQuery(value);
-              if (value) {
-                setSubCategoryFilter('All');
-              }
-            }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 transform"
-            aria-label="Search"
-          >
-            <Search className="w-4 h-4 text-gray-400" />
-          </button>
+          </div>
         </div>
 
-        {/* Liked Items */}
-        <button 
-          className="p-2 hover:bg-rose-100 rounded-full transition-colors"
-          onClick={() => router.push('/wishlist')}
+        {/* Mobile Menu Button */}
+        <button
+          onClick={handleMobileMenuToggle}
+          className="md:hidden p-2 rounded-lg hover:bg-rose-200 transition-colors"
+          aria-label="Toggle menu"
         >
-          <Heart className="w-5 h-5 text-rose-700" />
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Cart */}
-        <button 
-          className="p-2 hover:bg-rose-100 rounded-full transition-colors relative"
-          onClick={() => router.push('/cart')}
-        >
-          <ShoppingBag className="w-5 h-5 text-rose-700" />
-          <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>
-        </button>
+        {/* Desktop Navigation - Hidden on mobile */}
+        <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
+          <Link href="/" className={`pb-1 transition-colors duration-200 ease-in-out ${
+            pathname === '/' 
+              ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+              : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+          }`}>
+            Home
+          </Link>
+          <Link href="/men" className={`pb-1 transition-colors duration-200 ease-in-out ${
+            pathname === '/men' 
+              ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+              : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+          }`}>
+            Men
+          </Link>
+          <Link href="/women" className={`pb-1 transition-colors duration-200 ease-in-out ${
+            pathname === '/women' 
+              ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+              : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+          }`}>
+            Women
+          </Link>
+          <Link href="/faq" className={`pb-1 transition-colors duration-200 ease-in-out ${
+            pathname === '/faq' 
+              ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+              : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+          }`}>
+            FAQ
+          </Link>
+          <Link href="/contact" className={`pb-1 transition-colors duration-200 ease-in-out ${
+            pathname === '/contact' 
+              ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+              : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+          }`}>
+            Contact
+          </Link>
 
-        {/* Profile */}
-        {user ? (
-          <div className="relative" ref={profileMenuRef}>
+          {user && isSeller && (
             <button
-              className="p-2 hover:bg-rose-100 rounded-full"
-              onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-              aria-haspopup="true"
-              aria-expanded={isProfileMenuOpen}
+              onClick={() => router.push('/seller')}
+              className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
             >
-              <Image
-                src={user.imageUrl}
-                alt="Profile"
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-full object-cover"
-              />
+              Seller Dashboard
             </button>
+          )}
+        </div>
 
-            <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 ${isProfileMenuOpen ? 'block' : 'hidden'}`}>
+        {/* Search Bar & Action Buttons - Desktop Only */}
+        <div className="hidden md:flex items-center gap-5">
+          {/* Search Bar */}
+          <div className="relative -ml-4 lg:-ml-6">
+            <input
+              type="text"
+              placeholder="Search by name, category, or list item..."
+              className="w-60 lg:w-72 xl:w-80 px-4 py-1.5 pr-10 rounded-full border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent text-sm"
+              value={searchQuery}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchQuery(value);
+                if (value) {
+                  setSubCategoryFilter('All');
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const value = e.currentTarget.value;
+                  setSearchQuery(value);
+                  if (value) {
+                    setSubCategoryFilter('All');
+                  }
+                }
+              }}
+            />
+            {searchQuery && (
               <button
-                onClick={() => handleProfileNavigation('/profile')}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-rose-50 flex items-center gap-2"
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-7 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                aria-label="Clear search"
               >
-                <User className="w-4 h-4" /> Profile
+                ×
               </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                const value = searchQuery || '';
+                setSearchQuery(value);
+                if (value) {
+                  setSubCategoryFilter('All');
+                }
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+              aria-label="Search"
+            >
+              <Search className="w-4 h-4 text-gray-400" />
+            </button>
+          </div>
+
+          {/* Liked Items */}
+          <button 
+            className="p-2 hover:bg-rose-100 rounded-full transition-colors"
+            onClick={() => router.push('/wishlist')}
+          >
+            <Heart className="w-5 h-5 text-rose-700" />
+          </button>
+
+          {/* Cart */}
+          <button 
+            className="p-2 hover:bg-rose-100 rounded-full transition-colors relative"
+            onClick={() => router.push('/cart')}
+          >
+            <ShoppingBag className="w-5 h-5 text-rose-700" />
+            <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>
+          </button>
+
+          {/* Profile */}
+          {user ? (
+            <div className="relative" ref={profileMenuRef}>
               <button
-                onClick={() => handleProfileNavigation('/my-orders')}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-rose-50 flex items-center gap-2"
+                className="p-2 hover:bg-rose-100 rounded-full"
+                onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+                aria-haspopup="true"
+                aria-expanded={isProfileMenuOpen}
               >
-                <ShoppingBag className="w-4 h-4" /> My Orders
+                <Image
+                  src={user.imageUrl}
+                  alt="Profile"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
               </button>
-              <SignOutButton>
+
+              <div className={`absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 ${isProfileMenuOpen ? 'block' : 'hidden'}`}>
+                {/* Profile Header */}
+                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={user.imageUrl}
+                      alt="Profile"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 text-sm">{user.firstName || 'User'}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Menu Items Container */}
+                <div className="max-h-64 overflow-y-auto">
+                  <button
+                    onClick={() => handleProfileNavigation('/profile')}
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-rose-50 flex items-center gap-3 border-b border-gray-50 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                    <span className="flex-1">My Profile</span>
+                    <span className="text-gray-400">›</span>
+                  </button>
+                  <button
+                    onClick={() => handleProfileNavigation('/my-orders')}
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-rose-50 flex items-center gap-3 border-b border-gray-50 transition-colors"
+                  >
+                    <ShoppingBag className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                    <span className="flex-1">My Orders</span>
+                    <span className="text-gray-400">›</span>
+                  </button>
+                </div>
+
+                {/* Sign Out Section */}
+                <div className="border-t border-gray-100 bg-gray-50">
+                  <SignOutButton>
+                    <button className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors">
+                      <LogOut className="w-4 h-4 flex-shrink-0" />
+                      <span className="flex-1">Sign Out</span>
+                      <span className="text-gray-400">›</span>
+                    </button>
+                  </SignOutButton>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <button 
+              onClick={openSignIn} 
+              className="flex items-center gap-2 hover:text-rose-700 transition-colors"
+            >
+              <User className="w-5 h-5" />
+              <span className="text-sm">Login</span>
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* Mobile Menu - Positioned directly below navbar */}
+      <div className={`md:hidden absolute top-full left-0 right-0 bg-white border-b border-rose-200 shadow-xl transition-all duration-300 z-40 ${
+        isMobileMenuOpen ? 'max-h-screen opacity-100 visible' : 'max-h-0 opacity-0 invisible overflow-hidden'
+      }`}>
+        <div className="px-4 py-4">
+          <div className="space-y-3">
+            <Link href="/" onClick={handleMobileLinkClick} className={`block pb-1 transition-colors duration-200 ease-in-out ${
+              pathname === '/' 
+                ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+                : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+            }`}>
+              Home
+            </Link>
+            <Link href="/men" onClick={handleMobileLinkClick} className={`block pb-1 transition-colors duration-200 ease-in-out ${
+              pathname === '/men' 
+                ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+                : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+            }`}>
+              Men
+            </Link>
+            <Link href="/women" onClick={handleMobileLinkClick} className={`block pb-1 transition-colors duration-200 ease-in-out ${
+              pathname === '/women' 
+                ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+                : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+            }`}>
+              Women
+            </Link>
+            <Link href="/faq" onClick={handleMobileLinkClick} className={`block pb-1 transition-colors duration-200 ease-in-out ${
+              pathname === '/faq' 
+                ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+                : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+            }`}>
+              FAQ
+            </Link>
+            <Link href="/contact" onClick={handleMobileLinkClick} className={`block pb-1 transition-colors duration-200 ease-in-out ${
+              pathname === '/contact' 
+                ? 'text-rose-600 border-b-2 border-rose-600 font-semibold' 
+                : 'hover:text-rose-300 hover:border-b-2 hover:border-rose-300'
+            }`}>
+              Contact
+            </Link>
+
+            {user && isSeller && (
+              <button
+                onClick={() => {
+                  router.push('/seller');
+                  handleMobileLinkClick();
+                }}
+                className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
+              >
+                Seller Dashboard
+              </button>
+            )}
+
+            {/* Mobile Profile Section */}
+            {user && (
+              <div className="border-t border-gray-200 pt-3">
+                <div className="flex items-center gap-3 mb-3">
+                  <Image
+                    src={user.imageUrl}
+                    alt="Profile"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-800">Account</p>
+                    <p className="text-sm text-gray-600">{user.firstName || 'User'}</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      router.push('/profile');
+                      handleMobileLinkClick();
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 rounded-lg flex items-center gap-2"
+                  >
+                    <User className="w-4 h-4" /> Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      router.push('/my-orders');
+                      handleMobileLinkClick();
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 rounded-lg flex items-center gap-2"
+                  >
+                    <ShoppingBag className="w-4 h-4" /> My Orders
+                  </button>
+                  <SignOutButton>
+                    <button
+                      onClick={() => {
+                        handleMobileLinkClick();
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                  </SignOutButton>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Action Buttons - Only show for non-logged users */}
+            {!user && (
+              <div className="border-t border-gray-200 pt-3">
                 <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-rose-50 flex items-center gap-2"
-                  onClick={() => setIsProfileMenuOpen(false)}
+                  onClick={() => {
+                    router.push('/wishlist');
+                    handleMobileLinkClick();
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 rounded-lg flex items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" /> Sign Out
+                  <Heart className="w-4 h-4" /> Liked Products
                 </button>
-              </SignOutButton>
+                <button
+                  onClick={() => {
+                    router.push('/cart');
+                    handleMobileLinkClick();
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 rounded-lg flex items-center gap-2"
+                >
+                  <ShoppingBag className="w-4 h-4" /> Shopping Cart
+                  {cartCount > 0 && (
+                    <span className="ml-auto bg-rose-600 text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Mobile Action Icons */}
+            <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
+              <button 
+                className="p-2 hover:bg-rose-100 rounded-full transition-colors"
+                onClick={() => {
+                  router.push('/wishlist');
+                  handleMobileLinkClick();
+                }}
+              >
+                <Heart className="w-5 h-5 text-rose-700" />
+              </button>
+
+              <button 
+                className="p-2 hover:bg-rose-100 rounded-full transition-colors relative"
+                onClick={() => {
+                  router.push('/cart');
+                  handleMobileLinkClick();
+                }}
+              >
+                <ShoppingBag className="w-5 h-5 text-rose-700" />
+                <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>
+              </button>
+
+              {!user && (
+                <button 
+                  onClick={() => {
+                    openSignIn();
+                    handleMobileLinkClick();
+                  }} 
+                  className="flex items-center gap-2 hover:text-rose-700 transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="text-sm">Login</span>
+                </button>
+              )}
             </div>
           </div>
-        ) : (
-          <button 
-            onClick={openSignIn} 
-            className="flex items-center gap-2 hover:text-rose-700 transition-colors"
-          >
-            <User className="w-5 h-5" />
-            <span className="text-sm">Login</span>
-          </button>
-        )}
+        </div>
       </div>
-
-      <div className="flex items-center md:hidden gap-3">
-        {user && isSeller && (
-          <button
-            onClick={() => router.push('/seller')}
-            className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
-          >
-            Seller Dashboard
-          </button>
-        )}
-        
-        { 
-          user
-          ?<>
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Action label="Home" labelIcon={<Home className="w-4 h-4" />} onClick={() => router.push('/')} />
-            </UserButton.MenuItems>
-            <UserButton.MenuItems>
-              <UserButton.Action label="Products" labelIcon={<Box className="w-4 h-4" />} onClick={() => router.push('/all-products')} />
-            </UserButton.MenuItems>
-            <UserButton.MenuItems>
-              <UserButton.Action label="Cart" labelIcon={<ShoppingBag className="w-4 h-4" />} onClick={() => router.push('/cart')} />
-            </UserButton.MenuItems>
-            <UserButton.MenuItems>
-              <UserButton.Action label="My Orders" labelIcon={<ShoppingBag className="w-4 h-4" />} onClick={() => router.push('/my-orders')} />
-            </UserButton.MenuItems>
-          </UserButton>
-          </>
-          : <button onClick={openSignIn} className="flex items-center gap-2 hover:text-gray-900 transition">
-          <Image src={assets.user_icon} alt="user icon" />
-          Account
-        </button>
-        }
-      </div>
-    </nav>
+    </div>
   );
 };
 

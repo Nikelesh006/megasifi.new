@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
 
 export default function FAQPage() {
   const faqs = [
@@ -56,12 +57,12 @@ export default function FAQPage() {
         <div className="mt-16 text-center">
           <h2 className="text-2xl font-semibold text-rose-800 mb-4">Still have questions?</h2>
           <p className="text-gray-600 mb-6">Our customer service team is here to help</p>
-          <a 
+          <Link 
             href="/contact" 
             className="inline-block bg-rose-600 hover:bg-rose-700 text-white font-medium py-3 px-8 rounded-full transition-colors duration-200"
           >
             Contact Us
-          </a>
+          </Link>
         </div>
       </div>
     </div>

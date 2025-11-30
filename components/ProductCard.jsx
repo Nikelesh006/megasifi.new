@@ -75,10 +75,10 @@ const ProductCard = ({ product }) => {
         {/* Price */}
         <div className="flex items-center gap-2 mt-2">
           <span className="text-base font-semibold text-rose-700">
-            ${product.offerPrice}
+            {currency}{product.offerPrice}
           </span>
           <span className="text-xs text-gray-400 line-through">
-            ${product.originalPrice}
+            {currency}{product.originalPrice}
           </span>
         </div>
 

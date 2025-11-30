@@ -32,6 +32,18 @@ import banner4 from "./banner4.png";
 import footer_banner1 from "./footer_banner1.png";
 import footer_banner2 from "./footer_banner2.png";
 import featured1 from "./featured1.png";
+import tshirt from "./tshirt.png";
+import shirt from "./shirt.png";
+import cloth from "./cloth.png";
+import pants from "./pants.png";
+import jeans from "./jeans.png";
+import shorts from "./shorts.png";
+import jacket from "./jacket.png";
+import top from "./top.png";
+import saree from "./saree.png"
+import skirt from "./skirt.png"
+import kurti from "./kurti.png"
+import activewear from "./activewear.png"
 
 export const assets = {
   search_icon,
@@ -67,7 +79,19 @@ export const assets = {
   banner4,
   footer_banner1,
   footer_banner2,
-  featured1
+  featured1,
+  tshirt,
+  shirt,
+  cloth,
+  pants,
+  jeans,
+  shorts,
+  jacket,
+  top,
+  saree,
+  skirt,
+  kurti,
+  activewear
 };
 
 export const BagIcon = () => {

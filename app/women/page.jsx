@@ -18,12 +18,12 @@ export default function WomenPage() {
   const [activeCategory, setActiveCategory] = useState(null);
 
   const categories = [
-    { name: 'Tops', slug: 'tops', subCategory: 'Tops', image: assets.tshirt_icon },
-    { name: 'Dresses', slug: 'dresses', subCategory: 'Dresses', image: assets.dress_icon },
-    { name: 'Jeans', slug: 'jeans', subCategory: 'Jeans', image: assets.jeans_icon },
-    { name: 'Skirts', slug: 'skirts', subCategory: 'Skirts', image: assets.skirt_icon },
-    { name: 'Jackets', slug: 'jackets', subCategory: 'Jackets', image: assets.jacket_icon },
-    { name: 'Activewear', slug: 'activewear', subCategory: 'Activewear', image: assets.activewear_icon },
+    { name: 'Tops', slug: 'tops', subCategory: 'Tops', image: assets.top },
+    { name: 'Sarees', slug: 'sarees', subCategory: 'Sarees', image: assets.saree },
+    { name: 'Jeans', slug: 'jeans', subCategory: 'Jeans', image: assets.jeans },
+    { name: 'Skirts', slug: 'skirts', subCategory: 'Skirts', image: assets.skirt},
+    { name: 'Kurti', slug: 'kurti', subCategory: 'Kurti', image: assets.kurti},
+    { name: 'Activewear', slug: 'activewear', subCategory: 'Activewear', image: assets.activewear}
   ];
 
   // Toggle filter: clicking again clears it
@@ -43,29 +43,27 @@ export default function WomenPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Banner */}
-      <div className="relative h-64 md:h-96 overflow-hidden">
-        <Image
-          src={assets.women_banner}
-          alt="Women's Collection"
-          layout="fill"
-          objectFit="cover"
-          className="w-full h-full"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-          <div className="container mx-auto px-4 pb-12 text-white">
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">Women's Collection</h1>
-            <p className="text-lg md:text-xl">Discover the latest trends in women's fashion</p>
+      {/* Vibrant Header Section */}
+      <div className="relative w-full h-[300px] bg-gradient-to-br from-pink-400 via-rose-400 to-purple-400 overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative container mx-auto px-4 h-full flex items-center justify-center text-white">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">Women's Collection</h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto">Discover the latest trends in women's fashion with our curated selection of elegant and stylish clothing</p>
           </div>
         </div>
+        {/* Decorative Elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
       </div>
 
       {/* Categories as filters */}
-      <div className="container mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-rose-800 mb-8">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <h2 className="text-xl md:text-2xl md:text-3xl font-bold text-rose-800 mb-6 md:mb-8">
           Shop by Category
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
           {categories.map((category) => {
             const isActive =
               activeCategory &&
@@ -76,26 +74,26 @@ export default function WomenPage() {
                 key={category.slug}
                 type="button"
                 onClick={() => handleCategoryClick(category.subCategory)}
-                className={`group block text-center p-4 rounded-lg transition-colors duration-200 w-full
-                  ${isActive ? 'bg-rose-600 text-white' : 'hover:bg-rose-50'}
+                className={`group block text-center p-2 md:p-4 rounded-lg transition-colors duration-200 w-full
+                  ${isActive ? 'bg-rose-100 text-rose-900 border-2 border-rose-300 shadow-md' : 'hover:bg-rose-50'}
                 `}
               >
                 <div
-                  className={`bg-white p-4 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-3 transition-shadow
-                    ${isActive ? 'shadow-md shadow-rose-300' : 'group-hover:shadow-md'}
+                  className={`bg-white p-2 md:p-4 rounded-full w-20 h-20 md:w-32 md:h-32 flex items-center justify-center mx-auto mb-2 md:mb-3 transition-shadow
+                    ${isActive ? 'shadow-md border-2 border-rose-300' : 'group-hover:shadow-md'}
                   `}
                 >
                   <Image
                     src={category.image}
                     alt={category.name}
-                    width={60}
-                    height={60}
-                    className="object-contain"
+                    width={40}
+                    height={40}
+                    className="object-contain w-8 h-8 md:w-auto md:h-auto"
                   />
                 </div>
                 <span
-                  className={`font-medium transition-colors
-                    ${isActive ? 'text-white' : 'text-rose-800 group-hover:text-rose-600'}
+                  className={`text-xs md:text-sm font-medium transition-colors
+                    ${isActive ? 'text-rose-900' : 'text-rose-800 group-hover:text-rose-600'}
                   `}
                 >
                   {category.name}
@@ -108,8 +106,8 @@ export default function WomenPage() {
 
       {/* Products list (filtered) */}
       {filteredWomenProducts.length > 0 && (
-        <div className="container mx-auto px-4 pb-12">
-          <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col items-center px-4 pb-12">
+          <div className="flex items-center justify-between w-full max-w-6xl mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-rose-800">
               Women Products
             </h2>
@@ -119,7 +117,7 @@ export default function WomenPage() {
               </p>
             )}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 w-full max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
             {filteredWomenProducts.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -128,7 +126,7 @@ export default function WomenPage() {
       )}
 
       {filteredWomenProducts.length === 0 && womenProducts.length > 0 && (
-        <div className="container mx-auto px-4 pb-12">
+        <div className="flex flex-col items-center px-4 pb-12">
           <p className="text-center text-gray-500">
             No products found for this category.
           </p>

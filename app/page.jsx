@@ -3,7 +3,6 @@ import React from "react";
 import HeaderSlider from "@/components/HeaderSlider";
 import HomeProducts from "@/components/HomeProducts";
 import Banner from "@/components/Banner";
-import FeaturedProduct from "@/components/FeaturedProduct";
 import SpecialOffers from "@/components/SpecialOffers";
 import NewArrivals from "@/components/NewArrivals";
 
@@ -14,7 +13,6 @@ const Home = () => {
       <HomeProducts category="Popular Products" />
       <SpecialOffers />
       <NewArrivals />
-      <FeaturedProduct />
       <Banner />
     </div>
   );

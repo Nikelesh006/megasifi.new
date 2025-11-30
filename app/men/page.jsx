@@ -43,37 +43,35 @@ export default function MenPage() {
   });
 
   const categories = [
-    { name: 'T-Shirts', slug: 't-shirts', image: assets.tshirt_icon },
-    { name: 'Shirts', slug: 'shirts', image: assets.shirt_icon },
-    { name: 'Pants', slug: 'pants', image: assets.pants_icon },
-    { name: 'Jeans', slug: 'jeans', image: assets.jeans_icon },
-    { name: 'Shorts', slug: 'shorts', image: assets.shorts_icon },
-    { name: 'Jackets', slug: 'jackets', image: assets.jacket_icon },
+    { name: 'T-Shirts', slug: 't-shirts', image: assets.tshirt },
+    { name: 'Shirts', slug: 'shirts', image: assets.cloth },
+    { name: 'Pants', slug: 'pants', image: assets.pants },
+    { name: 'Jeans', slug: 'jeans', image: assets.jeans },
+    { name: 'Shorts', slug: 'shorts', image: assets.shorts },
+    { name: 'Jackets', slug: 'jackets', image: assets.jacket },
   ];
 
   return (
     <div className="min-h-screen">
-      {/* Banner */}
-      <div className="relative h-64 md:h-96 overflow-hidden">
-        <Image
-          src={assets.men_banner}
-          alt="Men's Collection"
-          layout="fill"
-          objectFit="cover"
-          className="w-full h-full"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-          <div className="container mx-auto px-4 pb-12 text-white">
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">Men's Collection</h1>
-            <p className="text-lg md:text-xl">Discover the latest trends in men's fashion</p>
+      {/* Vibrant Header Section */}
+      <div className="relative w-full h-[300px] bg-gradient-to-br from-rose-400 via-purple-400 to-blue-400 overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative container mx-auto px-4 h-full flex items-center justify-center text-white">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">Men's Collection</h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto">Discover the latest trends in men's fashion with our curated selection of premium clothing</p>
           </div>
         </div>
+        {/* Decorative Elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
       </div>
 
       {/* Categories */}
-      <div className="container mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-rose-800 mb-8">Shop by Category</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <h2 className="text-xl md:text-2xl md:text-3xl font-bold text-rose-800 mb-6 md:mb-8">Shop by Category</h2>
+        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
           {categories.map((category) => (
             <button
               key={category.slug}
@@ -82,22 +80,26 @@ export default function MenPage() {
                 setSubCategoryFilter(category.name);
                 setSearchQuery('');
               }}
-              className={`group block text-center p-4 rounded-lg transition-colors duration-200 ${
+              className={`group block text-center p-2 md:p-4 rounded-lg transition-colors duration-200 ${
                 subCategoryFilter === category.name
-                  ? 'bg-rose-50 border border-rose-400'
+                  ? 'bg-rose-100 text-rose-900 border-2 border-rose-300 shadow-md'
                   : 'hover:bg-rose-50'
               }`}
             >
-              <div className="bg-white p-4 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-3 group-hover:shadow-md transition-shadow">
+              <div className={`bg-white p-2 md:p-4 rounded-full w-20 h-20 md:w-32 md:h-32 flex items-center justify-center mx-auto mb-2 md:mb-3 transition-shadow ${
+                subCategoryFilter === category.name ? 'shadow-md border-2 border-rose-300' : 'group-hover:shadow-md'
+              }`}>
                 <Image 
                   src={category.image} 
                   alt={category.name} 
-                  width={60} 
-                  height={60}
-                  className="object-contain"
+                  width={40} 
+                  height={40}
+                  className="object-contain w-8 h-8 md:w-auto md:h-auto"
                 />
               </div>
-              <span className="font-medium text-rose-800 group-hover:text-rose-600 transition-colors">
+              <span className={`text-xs md:text-sm font-medium transition-colors ${
+                subCategoryFilter === category.name ? 'text-rose-900' : 'text-rose-800 group-hover:text-rose-600'
+              }`}>
                 {category.name}
               </span>
             </button>
@@ -105,8 +107,8 @@ export default function MenPage() {
         </div>
       </div>
       {menProducts.length > 0 && (
-        <div className="container mx-auto px-4 pb-12">
-          <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col items-center px-4 pb-12">
+          <div className="flex items-center justify-between w-full max-w-6xl mb-4">
             <h2 className="text-2xl md:text-3xl font-bold text-rose-800">Men Products</h2>
             {(searchQuery || subCategoryFilter !== 'All') && (
               <button
@@ -137,7 +139,7 @@ export default function MenPage() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 w-full max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl">
               {filteredMenProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
