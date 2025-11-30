@@ -8,6 +8,12 @@ const userSchema = new mongoose.Schema(
     imageUrl: { type: String, required: true },
     cartItems: { type: Object, default: {} },
     wishlist: { type: [String], default: [] }, // <-- NEW
+    // Profile fields
+    phone: { type: String, default: "" },
+    address: { type: String, default: "" },
+    birthDate: { type: String, default: "" },
+    gender: { type: String, enum: ["Male", "Female", "Other", ""], default: "" },
+    bio: { type: String, default: "" },
   },
   { minimize: false }
 );

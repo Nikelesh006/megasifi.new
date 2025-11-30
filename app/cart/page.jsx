@@ -4,10 +4,45 @@ import { assets } from "@/assets/assets";
 import OrderSummary from "@/components/OrderSummary";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
+import { User, ShoppingBag, ArrowRight } from "lucide-react";
 
 const Cart = () => {
+  const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount, currency, user } = useAppContext();
 
-  const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount, currency } = useAppContext();
+  // If user is not logged in, show sign-up prompt
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 py-20">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <User className="w-10 h-10 text-rose-600" />
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+            Sign In to View Your Cart
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Please sign in to your account to view your cart items and proceed with checkout.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => router.push('/sign-in')}
+              className="w-full flex items-center justify-center gap-2 bg-rose-600 text-white py-3 px-6 rounded-lg hover:bg-rose-700 transition-colors"
+            >
+              <User className="w-5 h-5" />
+              Sign In
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

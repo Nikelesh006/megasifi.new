@@ -1,20 +1,107 @@
 'use client'
-import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useUser } from '@clerk/nextjs';
 
 const ProfilePage = () => {
+  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+91 98765 43210',
-    address: '123 Fashion Street, Pollachi, Coimbatore',
-    birthDate: '1995-06-15',
-    gender: 'Male',
-    bio: 'Fashion enthusiast and style consultant. Love exploring new trends and sharing fashion tips with the community.'
+    name: user?.fullName || '',
+    email: user?.primaryEmailAddress?.emailAddress || '',
+    phone: '',
+    address: '',
+    birthDate: '',
+    gender: '',
+    bio: '',
+    imageUrl: user?.imageUrl || ''
   });
-
   const [tempData, setTempData] = useState(profileData);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch profile data from backend
+  const fetchProfile = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/profile');
+      const data = await response.json();
+      
+      if (data.success) {
+        setProfileData(data.profile);
+        setTempData(data.profile);
+      } else {
+        // Fallback to Clerk user data if API fails
+        const clerkData = {
+          name: user?.fullName || '',
+          email: user?.primaryEmailAddress?.emailAddress || '',
+          phone: '',
+          address: '',
+          birthDate: '',
+          gender: '',
+          bio: '',
+          imageUrl: user?.imageUrl || ''
+        };
+        setProfileData(clerkData);
+        setTempData(clerkData);
+        toast.error('Using basic profile info. Some details may not be saved.');
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      // Fallback to Clerk user data on error
+      const clerkData = {
+        name: user?.fullName || '',
+        email: user?.primaryEmailAddress?.emailAddress || '',
+        phone: '',
+        address: '',
+        birthDate: '',
+        gender: '',
+        bio: '',
+        imageUrl: user?.imageUrl || ''
+      };
+      setProfileData(clerkData);
+      setTempData(clerkData);
+      toast.error('Using basic profile info. Some details may not be saved.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Save profile data to backend
+  const saveProfile = async () => {
+    try {
+      setIsSaving(true);
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tempData),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setProfileData(data.profile);
+        setIsEditing(false);
+        toast.success('Profile updated successfully!');
+      } else {
+        toast.error(data.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   const handleEdit = () => {
     setTempData(profileData);
@@ -22,8 +109,7 @@ const ProfilePage = () => {
   };
 
   const handleSave = () => {
-    setProfileData(tempData);
-    setIsEditing(false);
+    saveProfile();
   };
 
   const handleCancel = () => {
@@ -37,6 +123,25 @@ const ProfilePage = () => {
       [field]: value
     }));
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-rose-700 mb-2">My Profile</h1>
+            <p className="text-gray-600 text-sm sm:text-base">Loading your profile information...</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-8">
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 text-rose-600 animate-spin" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
@@ -52,8 +157,16 @@ const ProfilePage = () => {
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-rose-400 to-pink-400 p-4 sm:p-6 md:p-8 text-white">
             <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-rose-400" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {user?.imageUrl ? (
+                  <img 
+                    src={user.imageUrl} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-rose-400" />
+                )}
               </div>
               <div className="flex-1 text-center sm:text-left">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold">{profileData.name}</h2>
@@ -72,10 +185,20 @@ const ProfilePage = () => {
                 <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
                     onClick={handleSave}
-                    className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 px-3 py-2 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
+                    disabled={isSaving}
+                    className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 disabled:bg-green-400 px-3 py-2 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
                   >
-                    <Save className="w-4 h-4" />
-                    <span>Save</span>
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        <span>Save</span>
+                      </>
+                    )}
                   </button>
                   <button
                     onClick={handleCancel}
