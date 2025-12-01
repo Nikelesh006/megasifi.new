@@ -1,77 +1,90 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X, Loader2 } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useUser } from '@clerk/nextjs';
+import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X } from 'lucide-react';
+import { useAppContext } from "@/context/AppContext";
 
 const ProfilePage = () => {
-  const { user } = useUser();
+  const { user, router } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: user?.fullName || '',
-    email: user?.primaryEmailAddress?.emailAddress || '',
+    name: '',
+    email: '',
     phone: '',
     address: '',
     birthDate: '',
     gender: '',
-    bio: '',
-    imageUrl: user?.imageUrl || ''
+    bio: ''
   });
-  const [tempData, setTempData] = useState(profileData);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch profile data from backend
-  const fetchProfile = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/profile');
-      const data = await response.json();
-      
-      if (data.success) {
-        setProfileData(data.profile);
-        setTempData(data.profile);
-      } else {
-        // Fallback to Clerk user data if API fails
-        const clerkData = {
+  const [tempData, setTempData] = useState(profileData);
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch('/api/profile');
+        const data = await response.json();
+        
+        if (data.success) {
+          // Merge Clerk user data with database profile data
+          const mergedProfileData = {
+            name: data.user.name || user?.fullName || '',
+            email: data.user.email || user?.primaryEmailAddress?.emailAddress || '',
+            phone: data.user.phone || '',
+            address: data.user.address || '',
+            birthDate: data.user.birthDate || '',
+            gender: data.user.gender || '',
+            bio: data.user.bio || ''
+          };
+          setProfileData(mergedProfileData);
+          setTempData(mergedProfileData);
+        } else {
+          console.error('Failed to fetch profile data:', data.message);
+          // Fallback to Clerk user data
+          const fallbackData = {
+            name: user?.fullName || '',
+            email: user?.primaryEmailAddress?.emailAddress || '',
+            phone: '',
+            address: '',
+            birthDate: '',
+            gender: '',
+            bio: ''
+          };
+          setProfileData(fallbackData);
+          setTempData(fallbackData);
+        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+        // Fallback to Clerk user data
+        const fallbackData = {
           name: user?.fullName || '',
           email: user?.primaryEmailAddress?.emailAddress || '',
           phone: '',
           address: '',
           birthDate: '',
           gender: '',
-          bio: '',
-          imageUrl: user?.imageUrl || ''
+          bio: ''
         };
-        setProfileData(clerkData);
-        setTempData(clerkData);
-        toast.error('Using basic profile info. Some details may not be saved.');
+        setProfileData(fallbackData);
+        setTempData(fallbackData);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      // Fallback to Clerk user data on error
-      const clerkData = {
-        name: user?.fullName || '',
-        email: user?.primaryEmailAddress?.emailAddress || '',
-        phone: '',
-        address: '',
-        birthDate: '',
-        gender: '',
-        bio: '',
-        imageUrl: user?.imageUrl || ''
-      };
-      setProfileData(clerkData);
-      setTempData(clerkData);
-      toast.error('Using basic profile info. Some details may not be saved.');
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    fetchProfileData();
+  }, [user]);
+
+  const handleEdit = () => {
+    setTempData(profileData);
+    setIsEditing(true);
   };
 
-  // Save profile data to backend
-  const saveProfile = async () => {
+  const handleSave = async () => {
+    setSaving(true);
     try {
-      setIsSaving(true);
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
@@ -83,33 +96,19 @@ const ProfilePage = () => {
       const data = await response.json();
       
       if (data.success) {
-        setProfileData(data.profile);
+        setProfileData(data.user);
+        setTempData(data.user);
         setIsEditing(false);
-        toast.success('Profile updated successfully!');
       } else {
-        toast.error(data.message || 'Failed to update profile');
+        console.error('Failed to update profile:', data.message);
+        alert('Failed to update profile: ' + data.message);
       }
     } catch (error) {
-      console.error('Error saving profile:', error);
-      toast.error('Failed to update profile');
+      console.error('Error updating profile:', error);
+      alert('Error updating profile: ' + error.message);
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
-
-  const handleEdit = () => {
-    setTempData(profileData);
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    saveProfile();
   };
 
   const handleCancel = () => {
@@ -124,20 +123,12 @@ const ProfilePage = () => {
     }));
   };
 
-  // Show loading state
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-rose-700 mb-2">My Profile</h1>
-            <p className="text-gray-600 text-sm sm:text-base">Loading your profile information...</p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-8">
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-8 h-8 text-rose-600 animate-spin" />
-            </div>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
         </div>
       </div>
     );
@@ -169,7 +160,7 @@ const ProfilePage = () => {
                 )}
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold">{profileData.name}</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold">{profileData.name || 'User'}</h2>
                 <p className="text-rose-100 text-sm sm:text-base">{profileData.email}</p>
               </div>
               {!isEditing ? (
@@ -185,20 +176,11 @@ const ProfilePage = () => {
                 <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
                     onClick={handleSave}
-                    disabled={isSaving}
-                    className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 disabled:bg-green-400 px-3 py-2 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
+                    disabled={saving}
+                    className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 disabled:bg-green-300 px-3 py-2 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
                   >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        <span>Save</span>
-                      </>
-                    )}
+                    <Save className="w-4 h-4" />
+                    <span>{saving ? 'Saving...' : 'Save'}</span>
                   </button>
                   <button
                     onClick={handleCancel}
@@ -269,7 +251,7 @@ const ProfilePage = () => {
                       className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.phone}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.phone || 'Not added'}</p>
                   )}
                 </div>
 
@@ -287,7 +269,7 @@ const ProfilePage = () => {
                       className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base resize-none"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.address}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base min-h-[60px]">{profileData.address || 'No address added'}</p>
                   )}
                 </div>
 
@@ -305,7 +287,7 @@ const ProfilePage = () => {
                       className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.birthDate}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.birthDate || 'Not specified'}</p>
                   )}
                 </div>
 
@@ -316,17 +298,18 @@ const ProfilePage = () => {
                     <span>Gender</span>
                   </label>
                   {isEditing ? (
-                    <select
-                      value={tempData.gender}
-                      onChange={(e) => handleChange('gender', e.target.value)}
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
+                  <select
+                    value={tempData.gender}
+                    onChange={(e) => handleChange('gender', e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.gender}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.gender || 'Not specified'}</p>
                   )}
                 </div>
               </div>

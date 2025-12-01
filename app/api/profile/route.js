@@ -24,7 +24,6 @@ export async function GET(request) {
       );
     }
 
-    // Return only profile-related fields
     const profileData = {
       name: user.name,
       email: user.email,
@@ -36,13 +35,9 @@ export async function GET(request) {
       imageUrl: user.imageUrl
     };
 
-    return NextResponse.json({ success: true, profile: profileData });
+    return NextResponse.json({ success: true, user: profileData });
   } catch (error) {
-    console.error("Error fetching profile:", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error.message });
   }
 }
 
@@ -57,7 +52,7 @@ export async function PUT(request) {
       );
     }
 
-    const profileData = await request.json();
+    const { name, phone, address, birthDate, gender, bio } = await request.json();
 
     await connectDB();
     const user = await User.findById(userId);
@@ -69,25 +64,20 @@ export async function PUT(request) {
       );
     }
 
-    // Update profile fields
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        $set: {
-          name: profileData.name,
-          email: profileData.email,
-          phone: profileData.phone,
-          address: profileData.address,
-          birthDate: profileData.birthDate,
-          gender: profileData.gender,
-          bio: profileData.bio,
-        },
-      },
-      { new: true, runValidators: true }
-    );
+    // Update user profile fields
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
+    if (address !== undefined) updateData.address = address;
+    if (birthDate !== undefined) updateData.birthDate = birthDate;
+    if (gender !== undefined) updateData.gender = gender;
+    if (bio !== undefined) updateData.bio = bio;
 
-    // Return updated profile data
-    const responseProfile = {
+    await User.findByIdAndUpdate(userId, updateData);
+
+    // Fetch updated user data
+    const updatedUser = await User.findById(userId);
+    const profileData = {
       name: updatedUser.name,
       email: updatedUser.email,
       phone: updatedUser.phone || "",
@@ -98,16 +88,8 @@ export async function PUT(request) {
       imageUrl: updatedUser.imageUrl
     };
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Profile updated successfully",
-      profile: responseProfile 
-    });
+    return NextResponse.json({ success: true, user: profileData });
   } catch (error) {
-    console.error("Error updating profile:", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error.message });
   }
 }

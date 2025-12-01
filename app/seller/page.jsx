@@ -19,7 +19,7 @@ const AddProduct = () => {
   const [offerPrice, setOfferPrice] = useState('');
 
   const menSubCategories = ['T-Shirts', 'Shirts', 'Pants', 'Jeans', 'Shorts', 'Jackets'];
-  const womenSubCategories = ['Tops', 'Dresses', 'Jeans', 'Skirts', 'Jackets', 'Activewear'];
+  const womenSubCategories = ['Tops', 'Sarees', 'Jeans', 'Skirts', 'Kurti', 'Activewear'];
   const homeSubCategories = ['Popular Products', 'Special Offers', 'New Arrivals'];
 
   const currentSubCategories = category === 'Women' ? womenSubCategories : 
