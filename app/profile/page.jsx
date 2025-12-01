@@ -304,12 +304,14 @@ const ProfilePage = () => {
                     className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
                   >
                     <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
                   </select>
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.gender || 'Not specified'}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">
+                      {profileData.gender ? profileData.gender.charAt(0).toUpperCase() + profileData.gender.slice(1) : 'Not specified'}
+                    </p>
                   )}
                 </div>
               </div>

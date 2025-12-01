@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, default: "" },
     address: { type: String, default: "" },
     birthDate: { type: String, default: "" },
-    gender: { type: String, enum: ["Male", "Female", "Other"], default: "" },
+    gender: { type: String, enum: ['male', 'female', 'other'], default: 'other', required: false },
     bio: { type: String, default: "" },
   },
   { minimize: false }

@@ -54,6 +54,9 @@ export async function PUT(request) {
 
     const { name, phone, address, birthDate, gender, bio } = await request.json();
 
+    // Normalize gender to prevent empty strings
+    const normalizedGender = gender && gender.trim() ? gender.toLowerCase() : undefined;
+
     await connectDB();
     const user = await User.findById(userId);
 
@@ -70,7 +73,7 @@ export async function PUT(request) {
     if (phone !== undefined) updateData.phone = phone;
     if (address !== undefined) updateData.address = address;
     if (birthDate !== undefined) updateData.birthDate = birthDate;
-    if (gender !== undefined) updateData.gender = gender;
+    if (gender !== undefined) updateData.gender = normalizedGender;
     if (bio !== undefined) updateData.bio = bio;
 
     await User.findByIdAndUpdate(userId, updateData);
