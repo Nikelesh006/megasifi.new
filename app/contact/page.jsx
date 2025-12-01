@@ -1,12 +1,12 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { assets } from '@/assets/assets';
 import { Mail, Phone, Instagram, MapPin, Clock, Send } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const ContactPage = () => {
+const ContactPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showToast, setShowToast] = useState(false);
@@ -399,6 +399,14 @@ const ContactPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const ContactPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ContactPageContent />
+    </Suspense>
   );
 };
 
