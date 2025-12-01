@@ -7,7 +7,6 @@ import Footer from "@/components/seller/Footer";
 import Loading from "@/components/Loading";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { getAuth } from "@clerk/nextjs/server";
 
 const Orders = () => {
 
