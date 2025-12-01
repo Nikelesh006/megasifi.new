@@ -157,6 +157,7 @@ export const AppContextProvider = (props) => {
       updated = likedItems.filter((id) => id !== productId);
     } else {
       updated = [...likedItems, productId];
+      toast.success("Added to liked products");
     }
     setLikedItems(updated);
 
