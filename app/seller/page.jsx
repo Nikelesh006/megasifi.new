@@ -17,6 +17,7 @@ const AddProduct = () => {
   const [subCategory, setSubCategory] = useState('T-Shirts');
   const [price, setPrice] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
+  const [sellerId, setSellerId] = useState('');
 
   const menSubCategories = ['T-Shirts', 'Shirts', 'Pants', 'Jeans', 'Shorts', 'Jackets'];
   const womenSubCategories = ['Tops', 'Sarees', 'Jeans', 'Skirts', 'Kurti', 'Activewear'];
@@ -36,6 +37,7 @@ const AddProduct = () => {
     formData.append("subCategory", subCategory)
     formData.append("price",price)
     formData.append("offerPrice",offerPrice)
+    formData.append("sellerId", sellerId)
 
     files.forEach((file) => {
       if (file) {
@@ -59,6 +61,7 @@ const AddProduct = () => {
           setSubCategory('T-Shirts')
           setPrice('')
           setOfferPrice('')
+          setSellerId('')
        }else{
         toast.error(data.message)
        }
@@ -197,6 +200,17 @@ const AddProduct = () => {
               required
             />
           </div>
+        </div>
+        <div className="flex flex-col gap-2 max-w-md">
+          <label className="text-sm text-gray-600">Seller ID</label>
+          <input
+            type="text"
+            value={sellerId}
+            onChange={(e) => setSellerId(e.target.value)}
+            placeholder="Enter your seller ID"
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+            required
+          />
         </div>
         <button type="submit" className="px-8 py-2.5 bg-rose-600 text-white font-medium rounded">
           ADD

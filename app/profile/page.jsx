@@ -2,9 +2,25 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X } from 'lucide-react';
 import { useAppContext } from "@/context/AppContext";
+import { useUser } from "@clerk/nextjs";
 
 const ProfilePage = () => {
   const { user, router } = useAppContext();
+  const { user: clerkUser, isLoaded } = useUser();
+  
+  const fullName =
+    clerkUser?.fullName ||
+    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ") ||
+    "User";
+
+  const email =
+    clerkUser?.primaryEmailAddress?.emailAddress ||
+    clerkUser?.emailAddresses?.[0]?.emailAddress ||
+    "";
+
+  if (!isLoaded) {
+    return <div className="py-16 text-center text-gray-500">Loading profile...</div>;
+  }
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -160,8 +176,8 @@ const ProfilePage = () => {
                 )}
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold">{profileData.name || 'User'}</h2>
-                <p className="text-rose-100 text-sm sm:text-base">{profileData.email}</p>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">{fullName}</h2>
+                <p className="text-rose-100 text-sm sm:text-base">{email}</p>
               </div>
               {!isEditing ? (
                 <button
@@ -207,16 +223,12 @@ const ProfilePage = () => {
                     <User className="w-4 h-4" />
                     <span>Full Name</span>
                   </label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={tempData.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
-                    />
-                  ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.name}</p>
-                  )}
+                  <input
+                    type="text"
+                    value={fullName}
+                    readOnly
+                    className="w-full bg-gray-50 px-4 py-2 rounded border border-gray-100 text-sm sm:text-base"
+                  />
                 </div>
 
                 {/* Email */}
@@ -225,16 +237,12 @@ const ProfilePage = () => {
                     <Mail className="w-4 h-4" />
                     <span>Email Address</span>
                   </label>
-                  {isEditing ? (
-                    <input
-                      type="email"
-                      value={tempData.email}
-                      onChange={(e) => handleChange('email', e.target.value)}
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none text-sm sm:text-base"
-                    />
-                  ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base">{profileData.email}</p>
-                  )}
+                  <input
+                    type="text"
+                    value={email}
+                    readOnly
+                    className="w-full bg-gray-50 px-4 py-2 rounded border border-gray-100 text-sm sm:text-base"
+                  />
                 </div>
 
                 {/* Phone */}

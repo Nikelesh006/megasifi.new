@@ -28,6 +28,7 @@ export async function POST(request){
         // calculate amount and build order items
         let amount = 0
         const orderItems = []
+        let sellerId = null
         for (const item of items) {
             // Skip mock products (IDs that don't look like ObjectIds)
             if (!item.product || !item.product.match(/^[0-9a-fA-F]{24}$/)) {
@@ -37,6 +38,11 @@ export async function POST(request){
             
             const product = await Product.findById(item.product)
             if (!product) continue
+
+            // Get sellerId from the first valid product
+            if (!sellerId && product.sellerId) {
+                sellerId = product.sellerId
+            }
 
             amount += product.offerPrice * item.quantity
             orderItems.push({
@@ -68,6 +74,7 @@ export async function POST(request){
 
         const order = await Order.create({
             userId,
+            sellerId,
             items: orderItems,
             amount: totalAmount,
             address: addressSnapshot,

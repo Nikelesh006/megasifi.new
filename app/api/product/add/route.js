@@ -32,6 +32,11 @@ export async function POST(request){
         const category=formData.get("category");
         const subCategory=formData.get("subCategory");
         const offerPrice=formData.get("offerPrice");
+        const sellerId=formData.get("sellerId");
+
+        if (!sellerId || sellerId.trim() === '') {
+            return NextResponse.json({success:false, message:'Seller ID is required'})
+        }
 
         const files=formData.getAll("image");
         const validFiles = (files || []).filter(
@@ -70,6 +75,7 @@ export async function POST(request){
         await connectDB()
         const newProduct= await Product.create({
             userId,
+            sellerId,
             name,
             description,
             price:Number(price),
