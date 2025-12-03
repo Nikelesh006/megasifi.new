@@ -9,12 +9,12 @@ const Layout = ({ children }) => {
       <Navbar />
       <div className="flex w-full flex-1 relative">
         {/* Sidebar: responsive width + contained within section */}
-        <div className="w-16 md:w-64 fixed md:relative z-10 h-full bg-white border-r border-gray-300">
+        <div className="w-16 md:w-64 fixed md:relative z-10 top-0 bottom-0 h-full bg-white border-r border-gray-300 overflow-y-auto">
           <Sidebar />
         </div>
 
         {/* Main content: flexible, padded, scrollable */}
-        <main className="flex-1 md:ml-0 ml-16 p-4 md:p-8 overflow-auto">
+        <main className="flex-1 md:ml-0 ml-16 p-4 md:p-8 overflow-y-auto">
           {children}
         </main>
       </div>
