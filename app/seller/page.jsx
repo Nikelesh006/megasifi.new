@@ -72,7 +72,7 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen flex flex-col justify-between">
+    <div className="w-full">
       <form onSubmit={handleSubmit} className="p-4 md:p-10 space-y-5 max-w-full">
         <div>
           <p className="text-base font-medium">Product Image</p>
@@ -216,7 +216,6 @@ const AddProduct = () => {
           ADD
         </button>
       </form>
-      {/* <Footer /> */}
     </div>
   );
 };
