@@ -8,8 +8,8 @@ const Layout = ({ children }) => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex w-full flex-1 relative">
-        {/* Sidebar: responsive width + full height */}
-        <div className="w-16 md:w-64 fixed md:relative z-10 h-full">
+        {/* Sidebar: responsive width + contained within section */}
+        <div className="w-16 md:w-64 fixed md:relative z-10 h-full bg-white border-r border-gray-300">
           <Sidebar />
         </div>
 
