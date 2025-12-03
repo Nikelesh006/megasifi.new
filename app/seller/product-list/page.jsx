@@ -2,7 +2,6 @@
 
 import { assets } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
-import Footer from "@/components/seller/Footer";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -108,7 +107,7 @@ const ProductList = () => {
     products.length > 0 && selectedProductIds.length === products.length;
 
   return (
-    <div className="flex-1 min-h-screen flex flex-col justify-between">
+    <div className="flex-1 min-h-screen">
       {loading ? (
         <p>Loading...</p>
       ) : products.length === 0 ? (
@@ -127,7 +126,76 @@ const ProductList = () => {
             )}
           </div>
           <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-            <table className="table-auto w-full overflow-hidden">
+            {/* Mobile Card View */}
+            <div className="md:hidden w-full">
+              {products.map((product, index) => (
+                <div key={product._id || index} className="border-b border-gray-500/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedProductIds.includes(product._id)}
+                      onChange={() => toggleSelectProduct(product._id)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-gray-500/10 rounded p-2">
+                          <Image
+                            src={product.image[0]}
+                            alt="product Image"
+                            className="w-16"
+                            width={1280}
+                            height={720}
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900">{product.name}</h3>
+                          <p className="text-lg font-semibold text-gray-900">${product.offerPrice}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Category:</span>
+                          <span className="font-medium">{product.category}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">List Item:</span>
+                          <span className="font-medium">{product.subCategory}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Seller ID:</span>
+                          <span className="font-medium">{product.sellerId || 'N/A'}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => router.push(`/product/${product._id}`)}
+                          className="flex-1 flex items-center justify-center gap-1 h-9 px-3 bg-rose-600 text-white text-sm rounded-md"
+                        >
+                          Visit
+                          <Image
+                            className="h-3.5"
+                            src={assets.redirect_icon}
+                            alt="redirect_icon"
+                          />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(product._id)}
+                          className="flex-1 flex items-center justify-center gap-1 h-9 px-3 bg-red-600 text-white text-sm rounded-md"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Desktop Table View */}
+            <table className="hidden md:table table-auto w-full overflow-hidden">
               <thead className="text-gray-900 text-sm text-left">
                 <tr>
                   <th className="px-4 py-3 w-10">
@@ -137,20 +205,20 @@ const ProductList = () => {
                       onChange={toggleSelectAll}
                     />
                   </th>
-                  <th className="w-2/3 md:w-2/5 px-4 py-3 font-medium truncate">
+                  <th className="w-2/5 px-4 py-3 font-medium truncate">
                     Product
                   </th>
-                  <th className="px-4 py-3 font-medium truncate max-sm:hidden">
+                  <th className="px-4 py-3 font-medium truncate">
                     Category
                   </th>
-                  <th className="px-4 py-3 font-medium truncate max-sm:hidden">
+                  <th className="px-4 py-3 font-medium truncate">
                     List Item
                   </th>
-                  <th className="px-4 py-3 font-medium truncate max-sm:hidden">
+                  <th className="px-4 py-3 font-medium truncate">
                     Seller ID
                   </th>
                   <th className="px-4 py-3 font-medium truncate">Price</th>
-                  <th className="px-4 py-3 font-medium text-center max-sm:hidden w-48">
+                  <th className="px-4 py-3 font-medium text-center w-48">
                     Action
                   </th>
                 </tr>
@@ -165,7 +233,7 @@ const ProductList = () => {
                         onChange={() => toggleSelectProduct(product._id)}
                       />
                     </td>
-                    <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
+                    <td className="px-4 py-3 flex items-center space-x-3 truncate">
                       <div className="bg-gray-500/10 rounded p-2">
                         <Image
                           src={product.image[0]}
@@ -177,23 +245,23 @@ const ProductList = () => {
                       </div>
                       <span className="truncate w-full">{product.name}</span>
                     </td>
-                    <td className="px-4 py-3 max-sm:hidden">
+                    <td className="px-4 py-3">
                       {product.category}
                     </td>
-                    <td className="px-4 py-3 max-sm:hidden">
+                    <td className="px-4 py-3">
                       {product.subCategory}
                     </td>
-                    <td className="px-4 py-3 max-sm:hidden">
+                    <td className="px-4 py-3">
                       {product.sellerId || 'N/A'}
                     </td>
                     <td className="px-4 py-3">${product.offerPrice}</td>
-                    <td className="px-4 py-3 max-sm:hidden w-48">
+                    <td className="px-4 py-3 w-48">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => router.push(`/product/${product._id}`)}
-                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-3 md:px-4 bg-rose-600 text-white text-sm rounded-md"
+                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-4 bg-rose-600 text-white text-sm rounded-md"
                         >
-                          <span className="hidden md:block">Visit</span>
+                          <span>Visit</span>
                           <Image
                             className="h-3.5"
                             src={assets.redirect_icon}
@@ -202,9 +270,9 @@ const ProductList = () => {
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(product._id)}
-                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-3 md:px-4 bg-red-600 text-white text-sm rounded-md"
+                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-4 bg-red-600 text-white text-sm rounded-md"
                         >
-                          <span className="hidden md:block">Delete</span>
+                          <span>Delete</span>
                         </button>
                       </div>
                     </td>
@@ -215,7 +283,6 @@ const ProductList = () => {
           </div>
         </div>
       )}
-      <Footer />
     </div>
   );
 };
