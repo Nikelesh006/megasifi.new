@@ -13,7 +13,7 @@ const SideBar = () => {
     ];
 
     return (
-        <div className='w-full h-full bg-white border-r min-h-screen text-base border-gray-300 py-2 flex flex-col'>
+        <div className='w-full h-full bg-white border-r text-base border-gray-300 py-2 flex flex-col'>
             {menuItems.map((item) => {
 
                 const isActive = pathname === item.path;
