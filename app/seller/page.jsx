@@ -216,7 +216,6 @@ const AddProduct = () => {
           ADD
         </button>
       </form>
-
     </div>
   );
 };
