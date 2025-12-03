@@ -150,7 +150,7 @@ const ProductList = () => {
                         </div>
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-900">{product.name}</h3>
-                          <p className="text-lg font-semibold text-gray-900">${product.offerPrice}</p>
+                          <p className="text-lg font-semibold text-gray-900">₹{product.offerPrice}</p>
                         </div>
                       </div>
                       
@@ -254,7 +254,7 @@ const ProductList = () => {
                     <td className="px-4 py-3">
                       {product.sellerId || 'N/A'}
                     </td>
-                    <td className="px-4 py-3">${product.offerPrice}</td>
+                    <td className="px-4 py-3">₹{product.offerPrice}</td>
                     <td className="px-4 py-3 w-48">
                       <div className="flex items-center gap-2">
                         <button
