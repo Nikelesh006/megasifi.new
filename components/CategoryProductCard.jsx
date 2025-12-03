@@ -62,11 +62,11 @@ const CategoryProductCard = ({ product }) => {
         {/* Price */}
         <div className="flex items-center gap-2 mt-2">
           <span className="text-base font-semibold text-rose-700">
-            ${product.offerPrice}
+            ₹{product.offerPrice}
           </span>
           {product.originalPrice && product.originalPrice > product.offerPrice && (
             <span className="text-xs text-gray-400 line-through">
-              ${product.originalPrice}
+              ₹{product.originalPrice}
             </span>
           )}
         </div>
