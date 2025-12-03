@@ -22,8 +22,8 @@ const SideBar = () => {
                     <Link href={item.path} key={item.name} passHref>
                         <div
                             className={
-                                `flex items-center py-3 px-2 md:px-4 gap-2 md:gap-3 ${isActive
-                                    ? "border-r-4 md:border-r-[6px] bg-orange-600/10 border-orange-500/90"
+                                `flex items-center py-3 px-4 gap-3 ${isActive
+                                    ? "border-r-4 bg-orange-600/10 border-orange-500/90"
                                     : "hover:bg-gray-100/90 border-white"
                                 }`
                             }
@@ -31,9 +31,9 @@ const SideBar = () => {
                             <Image
                                 src={item.icon}
                                 alt={`${item.name.toLowerCase()}_icon`}
-                                className="w-6 h-6 md:w-7 md:h-7"
+                                className="w-7 h-7"
                             />
-                            <p className='hidden md:block text-center'>{item.name}</p>
+                            <p className='text-center'>{item.name}</p>
                         </div>
                     </Link>
                 );
