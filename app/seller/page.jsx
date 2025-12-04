@@ -18,6 +18,8 @@ const AddProduct = () => {
   const [price, setPrice] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
   const [sellerId, setSellerId] = useState('');
+  const [size, setSize] = useState('M');
+  const [color, setColor] = useState('');
 
   const menSubCategories = ['T-Shirts', 'Shirts', 'Pants', 'Jeans', 'Shorts', 'Jackets'];
   const womenSubCategories = ['Tops', 'Sarees', 'Jeans', 'Skirts', 'Kurti', 'Activewear'];
@@ -38,6 +40,8 @@ const AddProduct = () => {
     formData.append("price",price)
     formData.append("offerPrice",offerPrice)
     formData.append("sellerId", sellerId)
+    formData.append('size', size);
+    formData.append('color', color);
 
     files.forEach((file) => {
       if (file) {
@@ -62,6 +66,8 @@ const AddProduct = () => {
           setPrice('')
           setOfferPrice('')
           setSellerId('')
+          setSize('M')
+          setColor('')
        }else{
         toast.error(data.message)
        }
@@ -197,6 +203,35 @@ const AddProduct = () => {
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 w-full"
               onChange={(e) => setOfferPrice(e.target.value)}
               value={offerPrice}
+              required
+            />
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mt-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-600">Size</label>
+            <select
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              required
+            >
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
+              <option value="XXXL">XXXL</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-600">Color</label>
+            <input
+              type="text"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              placeholder="e.g. Red"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               required
             />
           </div>

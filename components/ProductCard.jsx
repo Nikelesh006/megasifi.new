@@ -80,6 +80,9 @@ const ProductCard = ({ product }) => {
         <p className="text-xs text-gray-500 truncate mt-1 flex-1 md:text-xs md:text-gray-500 md:truncate md:mt-1 md:flex-1">
           {product.description}
         </p>
+        <p className="text-xs text-gray-500">
+          Size: {product.size} · Color: {product.color}
+        </p>
 
         {/* Price */}
         <div className="flex items-center gap-2 mt-2 md:flex md:items-center md:gap-2 md:mt-2">

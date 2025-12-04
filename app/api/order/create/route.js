@@ -48,7 +48,9 @@ export async function POST(request){
             orderItems.push({
                 product: product._id,
                 quantity: item.quantity,
-                price: product.offerPrice
+                price: product.offerPrice,
+                size: product.size,
+                color: product.color
             })
         }
 

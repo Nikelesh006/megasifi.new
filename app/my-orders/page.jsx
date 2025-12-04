@@ -65,7 +65,9 @@ const MyOrders = () => {
                                     <span className="font-medium text-base">
                                         {order.items?.map((item) => {
                                             const name = item.product?.name || 'Product';
-                                            return `${name} x ${item.quantity}`;
+                                            const size = item.size || 'N/A';
+                                            const color = item.color || 'N/A';
+                                            return `${name} (Size: ${size}, Color: ${color}) x ${item.quantity}`;
                                         }).join(', ')}
                                     </span>
                                     <span>Items : {order.items?.length || 0}</span>

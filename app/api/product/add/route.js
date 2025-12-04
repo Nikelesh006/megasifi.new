@@ -33,9 +33,19 @@ export async function POST(request){
         const subCategory=formData.get("subCategory");
         const offerPrice=formData.get("offerPrice");
         const sellerId=formData.get("sellerId");
+        const size=formData.get("size");
+        const color=formData.get("color");
 
         if (!sellerId || sellerId.trim() === '') {
             return NextResponse.json({success:false, message:'Seller ID is required'})
+        }
+
+        if (!['S','M','L','XL','XXL','XXXL'].includes(size)) {
+            return NextResponse.json({success:false, message:'Invalid size'})
+        }
+
+        if (!color || color.trim() === '') {
+            return NextResponse.json({success:false, message:'Color is required'})
         }
 
         const files=formData.getAll("image");
@@ -83,7 +93,9 @@ export async function POST(request){
             subCategory,
             offerPrice:Number(offerPrice),
             image,
-            date:Date.now()
+            date:Date.now(),
+            size,
+            color
         })
 
         return NextResponse.json({success:true,message:"Product added successfully"})

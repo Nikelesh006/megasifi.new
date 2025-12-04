@@ -164,6 +164,14 @@ const ProductList = () => {
                           <span className="font-medium">{product.subCategory}</span>
                         </div>
                         <div className="flex justify-between">
+                          <span className="text-gray-600">Size:</span>
+                          <span className="font-medium">{product.size}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Color:</span>
+                          <span className="font-medium">{product.color}</span>
+                        </div>
+                        <div className="flex justify-between">
                           <span className="text-gray-600">Seller ID:</span>
                           <span className="font-medium">{product.sellerId || 'N/A'}</span>
                         </div>
@@ -215,6 +223,12 @@ const ProductList = () => {
                     List Item
                   </th>
                   <th className="px-4 py-3 font-medium truncate">
+                    Size
+                  </th>
+                  <th className="px-4 py-3 font-medium truncate">
+                    Color
+                  </th>
+                  <th className="px-4 py-3 font-medium truncate">
                     Seller ID
                   </th>
                   <th className="px-4 py-3 font-medium truncate">Price</th>
@@ -250,6 +264,12 @@ const ProductList = () => {
                     </td>
                     <td className="px-4 py-3">
                       {product.subCategory}
+                    </td>
+                    <td className="px-4 py-3">
+                      {product.size}
+                    </td>
+                    <td className="px-4 py-3">
+                      {product.color}
                     </td>
                     <td className="px-4 py-3">
                       {product.sellerId || 'N/A'}
