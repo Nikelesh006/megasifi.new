@@ -30,10 +30,23 @@ const Product = () => {
 
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
+    const [variants, setVariants] = useState([]);
 
     const fetchProductData = async () => {
         const product = products.find(product => product._id === id);
         setProductData(product);
+        
+        // Find similar variants
+        if (product) {
+            const similarVariants = products.filter(p => 
+                p._id !== id && 
+                p.category === product.category && 
+                p.subCategory === product.subCategory && 
+                p.sellerId === product.sellerId &&
+                (p.size !== product.size || p.color !== product.color)
+            );
+            setVariants(similarVariants);
+        }
     }
 
     useEffect(() => {
@@ -111,8 +124,12 @@ const Product = () => {
                                     <td className="text-gray-800/50 ">Generic</td>
                                 </tr>
                                 <tr>
+                                    <td className="text-gray-600 font-medium">Size</td>
+                                    <td className="text-gray-800/50 ">{productData.size}</td>
+                                </tr>
+                                <tr>
                                     <td className="text-gray-600 font-medium">Color</td>
-                                    <td className="text-gray-800/50 ">Multi</td>
+                                    <td className="text-gray-800/50 ">{productData.color}</td>
                                 </tr>
                                 <tr>
                                     <td className="text-gray-600 font-medium">Category</td>
@@ -134,6 +151,19 @@ const Product = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Similar variants section */}
+            {variants.length > 0 && (
+                <section className="mt-10">
+                    <h3 className="text-lg font-semibold mb-4">More sizes & colors</h3>
+                    <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
+                        {variants.map((v) => (
+                            <ProductCard key={v._id} product={v} />
+                        ))}
+                    </div>
+                </section>
+            )}
+            
             <div className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-4 mt-16">
                     <p className="text-3xl font-medium">Featured <span className="font-medium text-rose-600">Products</span></p>
