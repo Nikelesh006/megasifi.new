@@ -27,26 +27,45 @@ export async function POST(request){
         const formData=await request.formData()
 
         const name=formData.get("name");
-        const description=formData.get("description");;
+        const description=formData.get("description");
         const price=formData.get("price");
         const category=formData.get("category");
         const subCategory=formData.get("subCategory");
         const offerPrice=formData.get("offerPrice");
         const sellerId=formData.get("sellerId");
-        const size=formData.get("size");
-        const color=formData.get("color");
+        const colorOptionsStr = formData.get("colorOptions");
 
         if (!sellerId || sellerId.trim() === '') {
             return NextResponse.json({success:false, message:'Seller ID is required'})
         }
 
-        if (!['S','M','L','XL','XXL','XXXL'].includes(size)) {
-            return NextResponse.json({success:false, message:'Invalid size'})
+        let colorOptions;
+        try {
+            colorOptions = JSON.parse(colorOptionsStr);
+        } catch (error) {
+            return NextResponse.json({success:false, message:'Invalid color options format'})
         }
 
-        if (!color || color.trim() === '') {
-            return NextResponse.json({success:false, message:'Color is required'})
+        if (!Array.isArray(colorOptions) || !colorOptions.length) {
+            return NextResponse.json({success:false, message:'At least one colour is required'})
         }
+
+        const VALID_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
+        const normalizedColors = colorOptions.map((opt) => {
+            if (!opt.color || !Array.isArray(opt.sizes) || !opt.sizes.length) {
+                throw new Error('Each colour must have at least one size');
+            }
+            const cleanSizes = [...new Set(opt.sizes)].filter((s) =>
+                VALID_SIZES.includes(s)
+            );
+            if (!cleanSizes.length) throw new Error('Invalid sizes');
+            return {
+                color: opt.color.toLowerCase(),
+                sizes: cleanSizes.map((s) => ({ size: s, stock: 0 })),
+                images: opt.images || [],
+            };
+        });
 
         const files=formData.getAll("image");
         const validFiles = (files || []).filter(
@@ -94,8 +113,7 @@ export async function POST(request){
             offerPrice:Number(offerPrice),
             image,
             date:Date.now(),
-            size,
-            color
+            colorOptions: normalizedColors,
         })
 
         return NextResponse.json({success:true,message:"Product added successfully"})

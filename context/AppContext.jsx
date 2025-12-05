@@ -21,7 +21,7 @@ export const AppContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [userData, setUserData] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
-  const [cartItems, setCartItems] = useState({});
+  const [cartItems, setCartItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]); // <-- NEW
   const [searchQuery, setSearchQuery] = useState('');
   const [subCategoryFilter, setSubCategoryFilter] = useState('All');
@@ -56,7 +56,7 @@ export const AppContextProvider = (props) => {
 
       if (data.success) {
         setUserData(data.user);
-        setCartItems(data.user?.cartItems || {});
+        setCartItems(data.user?.cartItems || []);
         setLikedItems(data.user?.wishlist || []); // <-- load wishlist
       } else {
         toast.error(data.message);
@@ -66,13 +66,42 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const addToCart = async (itemId) => {
-    let cartData = structuredClone(cartItems);
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-    } else {
-      cartData[itemId] = 1;
+  const addToCart = async (itemId, options = {}) => {
+    const { color, size, image } = options;
+    
+    if (!color || !size) {
+      toast.error('Please select color and size');
+      return;
     }
+
+    // Create a unique key for the variant
+    const variantKey = `${itemId}-${color}-${size}`;
+    
+    let cartData = structuredClone(cartItems);
+    const existingItemIndex = cartData.findIndex(item => 
+      item.productId === itemId && item.color === color && item.size === size
+    );
+    
+    if (existingItemIndex >= 0) {
+      cartData[existingItemIndex].qty += 1;
+    } else {
+      const product = products.find(p => p._id === itemId);
+      if (!product) {
+        toast.error('Product not found');
+        return;
+      }
+      
+      cartData.push({
+        productId: itemId,
+        name: product.name,
+        price: product.offerPrice,
+        color,
+        size,
+        image: image || product.image[0],
+        qty: 1
+      });
+    }
+    
     setCartItems(cartData);
 
     if (user) {
@@ -81,7 +110,7 @@ export const AppContextProvider = (props) => {
 
         await axios.put(
           '/api/cart/update',
-          { cartData },
+          { cartItems: cartData },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         toast.success("Item added to cart");
@@ -91,13 +120,15 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const updateCartQuantity = async (itemId, quantity) => {
+  const updateCartQuantity = async (index, quantity) => {
     let cartData = structuredClone(cartItems);
-    if (quantity === 0) {
-      delete cartData[itemId];
+    
+    if (quantity === 0 || index < 0 || index >= cartData.length) {
+      cartData.splice(index, 1);
     } else {
-      cartData[itemId] = quantity;
+      cartData[index].qty = quantity;
     }
+    
     setCartItems(cartData);
 
     if (user) {
@@ -106,7 +137,7 @@ export const AppContextProvider = (props) => {
 
         await axios.put(
           '/api/cart/update',
-          { cartData },
+          { cartItems: cartData },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         toast.success("Item updated in cart");
@@ -117,28 +148,26 @@ export const AppContextProvider = (props) => {
   };
 
   const getCartCount = () => {
-    let totalCount = 0;
-    for (const items in cartItems) {
-      if (cartItems[items] > 0) {
-        totalCount += cartItems[items];
-      }
-    }
-    return totalCount;
+    if (!Array.isArray(cartItems)) return 0;
+    return cartItems.reduce((total, item) => total + (item.qty || 0), 0);
   };
 
   const getCartAmount = () => {
+    if (!Array.isArray(cartItems)) return 0;
     let totalAmount = 0;
-    for (const items in cartItems) {
-      const quantity = cartItems[items];
-      if (!quantity || quantity <= 0) continue;
+    
+    for (const item of cartItems) {
+      const quantity = item.qty || 0;
+      if (quantity <= 0) continue;
 
-      const itemInfo = products.find((product) => product._id === items);
+      const itemInfo = products.find((product) => product._id === item.productId);
       if (!itemInfo || typeof itemInfo.offerPrice !== 'number') {
         continue;
       }
 
       totalAmount += itemInfo.offerPrice * quantity;
     }
+    
     return Math.floor(totalAmount * 100) / 100;
   };
 
@@ -188,7 +217,7 @@ export const AppContextProvider = (props) => {
       fetchUserData();
     } else {
       setUserData(false);
-      setCartItems({});
+      setCartItems([]);
       setLikedItems([]); // clear wishlist on logout
       setIsSeller(false);
     }

@@ -31,10 +31,23 @@ const Product = () => {
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
     const [variants, setVariants] = useState([]);
+    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedSize, setSelectedSize] = useState('');
 
     const fetchProductData = async () => {
         const product = products.find(product => product._id === id);
         setProductData(product);
+        
+        // Initialize color and size selection
+        if (product && product.colorOptions && product.colorOptions.length > 0) {
+            const firstColor = product.colorOptions[0].color;
+            setSelectedColor(firstColor);
+            
+            const firstColorSizes = product.colorOptions.find(c => c.color === firstColor)?.sizes || [];
+            if (firstColorSizes.length > 0) {
+                setSelectedSize(firstColorSizes[0].size);
+            }
+        }
         
         // Find similar variants
         if (product) {
@@ -42,8 +55,7 @@ const Product = () => {
                 p._id !== id && 
                 p.category === product.category && 
                 p.subCategory === product.subCategory && 
-                p.sellerId === product.sellerId &&
-                (p.size !== product.size || p.color !== product.color)
+                p.sellerId === product.sellerId
             );
             setVariants(similarVariants);
         }
@@ -52,6 +64,38 @@ const Product = () => {
     useEffect(() => {
         fetchProductData();
     }, [id, products.length])
+
+    const sizesForColor = (color) => {
+        const found = productData?.colorOptions?.find((c) => c.color === color);
+        return found ? found.sizes.map((s) => s.size) : [];
+    };
+
+    const handleAddToCart = () => {
+        if (!selectedColor || !selectedSize) {
+            alert('Please select colour and size');
+            return;
+        }
+
+        addToCart(productData._id, {
+            color: selectedColor,
+            size: selectedSize,
+            image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
+        });
+    };
+
+    const handleBuyNow = () => {
+        if (!selectedColor || !selectedSize) {
+            alert('Please select colour and size');
+            return;
+        }
+
+        addToCart(productData._id, {
+            color: selectedColor,
+            size: selectedSize,
+            image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
+        });
+        router.push('/cart');
+    };
 
     return productData ? (
         <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
@@ -115,22 +159,10 @@ const Product = () => {
                             {currency}{productData.price}
                         </span>
                     </p>
-                    <hr className="bg-gray-600 my-6" />
+
                     <div className="overflow-x-auto">
                         <table className="table-auto border-collapse w-full max-w-72">
                             <tbody>
-                                <tr>
-                                    <td className="text-gray-600 font-medium">Brand</td>
-                                    <td className="text-gray-800/50 ">Generic</td>
-                                </tr>
-                                <tr>
-                                    <td className="text-gray-600 font-medium">Size</td>
-                                    <td className="text-gray-800/50 ">{productData.size}</td>
-                                </tr>
-                                <tr>
-                                    <td className="text-gray-600 font-medium">Color</td>
-                                    <td className="text-gray-800/50 ">{productData.color}</td>
-                                </tr>
                                 <tr>
                                     <td className="text-gray-600 font-medium">Category</td>
                                     <td className="text-gray-800/50">
@@ -141,11 +173,63 @@ const Product = () => {
                         </table>
                     </div>
 
+                    <hr className="bg-gray-600 my-6" />
+
+                    {productData.colorOptions && productData.colorOptions.length > 0 && (
+                        <>
+                            <div className="mt-4">
+                                <p className="text-sm font-medium mb-1">Colours available</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {productData.colorOptions.map((c) => (
+                                        <button
+                                            key={c.color}
+                                            type="button"
+                                            onClick={() => {
+                                                setSelectedColor(c.color);
+                                                const sizes = sizesForColor(c.color);
+                                                if (!sizes.includes(selectedSize)) {
+                                                    setSelectedSize(sizes[0] || '');
+                                                }
+                                            }}
+                                            className={`px-3 py-1 rounded-full border text-xs capitalize ${
+                                                selectedColor === c.color
+                                                    ? 'bg-pink-500 text-white border-pink-500'
+                                                    : 'bg-white text-gray-800 border-gray-300'
+                                            }`}
+                                        >
+                                            {c.color}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mt-4">
+                                <p className="text-sm font-medium mb-1">Sizes available</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {sizesForColor(selectedColor).map((size) => (
+                                        <button
+                                            key={size}
+                                            type="button"
+                                            onClick={() => setSelectedSize(size)}
+                                            className={`px-4 py-1 rounded-full border text-sm ${
+                                                selectedSize === size
+                                                    ? 'border-pink-500 bg-pink-50'
+                                                    : 'border-gray-300 bg-white'
+                                            }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
+
                     <div className="flex items-center mt-10 gap-4">
-                        <button onClick={() => addToCart(productData._id)} className="w-full py-3.5 border border-rose-600 text-rose-600 hover:bg-rose-50 transition">
+                        <button onClick={handleAddToCart} className="w-full py-3.5 border border-rose-600 text-rose-600 hover:bg-rose-50 transition">
                             Add to Cart
                         </button>
-                        <button onClick={() => { addToCart(productData._id); router.push('/cart') }} className="w-full py-3.5 bg-rose-500 text-white hover:bg-rose-600 transition">
+                        <button onClick={handleBuyNow} className="w-full py-3.5 bg-rose-500 text-white hover:bg-rose-600 transition">
                             Buy now
                         </button>
                     </div>

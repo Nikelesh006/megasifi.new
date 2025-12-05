@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+const SizeOptionSchema = new mongoose.Schema({
+    size: {
+        type: String,
+        enum: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+        required: true,
+    },
+    stock: { type: Number, default: 0 },
+});
+
+const ColorOptionSchema = new mongoose.Schema({
+    color: { type: String, required: true },
+    images: [String],
+    sizes: [SizeOptionSchema],
+});
+
 const productSchema = new mongoose.Schema({
     userId:{type:String, required:true,ref:"user"},
     sellerId: { type: String, required: true },
@@ -11,16 +26,7 @@ const productSchema = new mongoose.Schema({
     offerPrice:{type:Number,required:true},
     image:{type:Array, required:true},
     date:{type:Number,required:true},
-    size: {
-        type: String,
-        enum: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-        required: true,
-    },
-    color: {
-        type: String,
-        required: true,
-        trim: true,
-    }
+    colorOptions: { type: [ColorOptionSchema], default: [] },
 })
 
 const Product= mongoose.models.product ||mongoose.model('product',productSchema)

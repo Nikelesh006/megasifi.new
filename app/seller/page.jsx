@@ -18,8 +18,10 @@ const AddProduct = () => {
   const [price, setPrice] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
   const [sellerId, setSellerId] = useState('');
-  const [size, setSize] = useState('M');
-  const [color, setColor] = useState('');
+
+  const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+  const [colorInput, setColorInput] = useState('');
+  const [colorOptions, setColorOptions] = useState([]);
 
   const menSubCategories = ['T-Shirts', 'Shirts', 'Pants', 'Jeans', 'Shorts', 'Jackets'];
   const womenSubCategories = ['Tops', 'Sarees', 'Jeans', 'Skirts', 'Kurti', 'Activewear'];
@@ -32,20 +34,33 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData=new FormData()
-    formData.append("name",name)
-    formData.append("description",description)
-    formData.append("category",category)
-    formData.append("subCategory", subCategory)
-    formData.append("price",price)
-    formData.append("offerPrice",offerPrice)
-    formData.append("sellerId", sellerId)
-    formData.append('size', size);
-    formData.append('color', color);
+    if (!Array.isArray(colorOptions) || !colorOptions.length) {
+      toast.error('At least one colour is required');
+      return;
+    }
+
+    const hasValidSizes = colorOptions.every(opt => 
+      opt.sizes && opt.sizes.length > 0
+    );
+
+    if (!hasValidSizes) {
+      toast.error('Each colour must have at least one size');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("subCategory", subCategory);
+    formData.append("price", price);
+    formData.append("offerPrice", offerPrice);
+    formData.append("sellerId", sellerId);
+    formData.append("colorOptions", JSON.stringify(colorOptions));
 
     files.forEach((file) => {
       if (file) {
-        formData.append("image", file)
+        formData.append("image", file);
       }
     })
 
@@ -66,8 +81,8 @@ const AddProduct = () => {
           setPrice('')
           setOfferPrice('')
           setSellerId('')
-          setSize('M')
-          setColor('')
+          setColorInput('');
+          setColorOptions([]);
        }else{
         toast.error(data.message)
        }
@@ -207,33 +222,80 @@ const AddProduct = () => {
             />
           </div>
         </div>
-        <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mt-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-600">Size</label>
-            <select
-              value={size}
-              onChange={(e) => setSize(e.target.value)}
-              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
-              required
-            >
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-              <option value="XXL">XXL</option>
-              <option value="XXXL">XXXL</option>
-            </select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-600">Color</label>
+        <div className="mt-4">
+          <p className="text-sm text-gray-600 mb-2">Colours</p>
+          <div className="flex gap-2 mb-3">
             <input
               type="text"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              placeholder="e.g. Red"
+              value={colorInput}
+              onChange={(e) => setColorInput(e.target.value)}
+              placeholder="e.g. red"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
-              required
             />
+            <button
+              type="button"
+              onClick={() => {
+                const c = colorInput.trim().toLowerCase();
+                if (!c) return;
+                setColorOptions((prev) =>
+                  prev.some((opt) => opt.color === c)
+                    ? prev
+                    : [...prev, { color: c, sizes: [] }]
+                );
+                setColorInput('');
+              }}
+              className="px-4 py-2 rounded bg-pink-500 text-white text-sm"
+            >
+              Add Colour
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {colorOptions.map((opt, index) => (
+              <div key={opt.color} className="border rounded p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-medium capitalize">{opt.color}</p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setColorOptions((prev) =>
+                        prev.filter((c) => c.color !== opt.color)
+                      )
+                    }
+                    className="text-xs text-red-500"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <p className="text-xs text-gray-600 mb-1">Available sizes for this colour:</p>
+                <div className="flex flex-wrap gap-3">
+                  {ALL_SIZES.map((size) => (
+                    <label key={size} className="flex items-center gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        checked={opt.sizes.includes(size)}
+                        onChange={() =>
+                          setColorOptions((prev) =>
+                            prev.map((c, i) =>
+                              i === index
+                                ? {
+                                    ...c,
+                                    sizes: c.sizes.includes(size)
+                                      ? c.sizes.filter((s) => s !== size)
+                                      : [...c.sizes, size],
+                                  }
+                                : c
+                            )
+                          )
+                        }
+                      />
+                      <span>{size}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <div className="flex flex-col gap-2 w-full">

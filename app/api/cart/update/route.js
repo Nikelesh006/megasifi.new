@@ -6,11 +6,11 @@ import connectDB from "@/config/db";
 export async function PUT(request){
     try{
         const { userId } = getAuth(request);
-        const { cartData } = await request.json();
+        const { cartItems } = await request.json();
 
         await connectDB();
         const user = await User.findById(userId);
-        user.cartItems = cartData;
+        user.cartItems = cartItems;
         await user.save();
 
         return NextResponse.json({ success: true, message: "Cart updated successfully" });

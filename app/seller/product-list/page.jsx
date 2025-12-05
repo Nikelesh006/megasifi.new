@@ -164,12 +164,20 @@ const ProductList = () => {
                           <span className="font-medium">{product.subCategory}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Size:</span>
-                          <span className="font-medium">{product.size}</span>
+                          <span className="text-gray-600">Colours:</span>
+                          <span className="font-medium">
+                            {product.colorOptions?.map((c) => c.color).join(', ') || 'N/A'}
+                          </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Color:</span>
-                          <span className="font-medium">{product.color}</span>
+                          <span className="text-gray-600">Sizes:</span>
+                          <span className="font-medium">
+                            {Array.from(
+                              new Set(
+                                product.colorOptions?.flatMap((c) => c.sizes?.map((s) => s.size) || [])
+                              )
+                            ).join(', ') || 'N/A'}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Seller ID:</span>
@@ -223,10 +231,10 @@ const ProductList = () => {
                     List Item
                   </th>
                   <th className="px-4 py-3 font-medium truncate">
-                    Size
+                    Colours
                   </th>
                   <th className="px-4 py-3 font-medium truncate">
-                    Color
+                    Sizes
                   </th>
                   <th className="px-4 py-3 font-medium truncate">
                     Seller ID
@@ -266,10 +274,14 @@ const ProductList = () => {
                       {product.subCategory}
                     </td>
                     <td className="px-4 py-3">
-                      {product.size}
+                      {product.colorOptions?.map((c) => c.color).join(', ') || 'N/A'}
                     </td>
                     <td className="px-4 py-3">
-                      {product.color}
+                      {Array.from(
+                        new Set(
+                          product.colorOptions?.flatMap((c) => c.sizes?.map((s) => s.size) || [])
+                        )
+                      ).join(', ') || 'N/A'}
                     </td>
                     <td className="px-4 py-3">
                       {product.sellerId || 'N/A'}

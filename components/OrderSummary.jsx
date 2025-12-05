@@ -42,8 +42,7 @@ const OrderSummary = () => {
         return toast.error("Please select an address");
       }
 
-      let cartItemsArray = Object.keys(cartItems).map((key) => ({ product: key, quantity: cartItems[key] }));
-      cartItemsArray = cartItemsArray.filter((item) => item.quantity > 0);
+      let cartItemsArray = cartItems.filter((item) => item.qty > 0);
 
       if (cartItemsArray.length === 0) {
         return toast.error("cart is empty");
@@ -64,7 +63,7 @@ const OrderSummary = () => {
 
       if (data.success) {
         toast.success(data.message );
-        setCartItems({});
+        setCartItems([]);
         router.push("/order-placed");
       } else {
         toast.error(data.message );

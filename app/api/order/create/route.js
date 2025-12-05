@@ -31,12 +31,12 @@ export async function POST(request){
         let sellerId = null
         for (const item of items) {
             // Skip mock products (IDs that don't look like ObjectIds)
-            if (!item.product || !item.product.match(/^[0-9a-fA-F]{24}$/)) {
-                console.log(`Skipping mock product: ${item.product}`);
+            if (!item.productId || !item.productId.match(/^[0-9a-fA-F]{24}$/)) {
+                console.log(`Skipping mock product: ${item.productId}`);
                 continue;
             }
             
-            const product = await Product.findById(item.product)
+            const product = await Product.findById(item.productId)
             if (!product) continue
 
             // Get sellerId from the first valid product
@@ -44,13 +44,13 @@ export async function POST(request){
                 sellerId = product.sellerId
             }
 
-            amount += product.offerPrice * item.quantity
+            amount += (item.price || product.offerPrice) * item.qty
             orderItems.push({
                 product: product._id,
-                quantity: item.quantity,
-                price: product.offerPrice,
-                size: product.size,
-                color: product.color
+                quantity: item.qty,
+                price: item.price || product.offerPrice,
+                size: item.size,
+                color: item.color
             })
         }
 
@@ -101,7 +101,7 @@ export async function POST(request){
 
         const user = await User.findById(userId)
         if (user) {
-            user.cartItems = {}
+            user.cartItems = []
             await user.save()
         }
 
