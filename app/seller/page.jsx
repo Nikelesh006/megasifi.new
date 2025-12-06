@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
@@ -388,4 +388,10 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default function SellerPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AddProduct />
+    </Suspense>
+  );
+}
