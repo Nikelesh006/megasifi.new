@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
     category:{type:String, required:true},
     subCategory:{type:String, required:true},
     offerPrice:{type:Number,required:true},
-    image:{type:Array, required:true},
+    image:{type:Array, required:true}, // Supports up to 7 images
     date:{type:Number,required:true},
     colorOptions: { type: [ColorOptionSchema], default: [] },
 })

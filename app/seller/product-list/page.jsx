@@ -107,25 +107,29 @@ const ProductList = () => {
     products.length > 0 && selectedProductIds.length === products.length;
 
   return (
-    <div className="flex-1 min-h-screen">
+    <div className="flex-1 min-h-screen bg-gray-50">
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-500">Loading...</p>
+        </div>
       ) : products.length === 0 ? (
-        <p className="text-gray-500">No products added yet.</p>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-500">No products added yet.</p>
+        </div>
       ) : (
-        <div className="w-full md:p-10 p-4">
-          <div className="flex items-center justify-between pb-4">
-            <h2 className="text-lg font-medium">All Product</h2>
+        <div className="w-full max-w-full mx-auto p-4 sm:p-6 lg:p-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 mb-6 border-b border-gray-200">
+            <h2 className="text-xl sm:text-lg font-medium text-gray-900">All Products</h2>
             {selectedProductIds.length > 0 && (
               <button
                 onClick={handleDeleteSelected}
-                className="flex items-center justify-center gap-1 h-9 px-4 bg-red-600 text-white text-sm rounded-md"
+                className="flex items-center justify-center gap-2 h-10 px-4 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors w-full sm:w-auto"
               >
                 Delete Selected ({selectedProductIds.length})
               </button>
             )}
           </div>
-          <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
+          <div className="w-full overflow-hidden rounded-lg bg-white shadow-sm border border-gray-200">
             {/* Mobile Card View */}
             <div className="md:hidden w-full">
               {products.map((product, index) => (
@@ -186,6 +190,12 @@ const ProductList = () => {
                       </div>
                       
                       <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => router.push(`/seller?productId=${product._id}`)}
+                          className="flex-1 flex items-center justify-center gap-1 h-9 px-3 bg-blue-600 text-white text-sm rounded-md"
+                        >
+                          Edit
+                        </button>
                         <button
                           onClick={() => router.push(`/product/${product._id}`)}
                           className="flex-1 flex items-center justify-center gap-1 h-9 px-3 bg-rose-600 text-white text-sm rounded-md"
@@ -289,6 +299,12 @@ const ProductList = () => {
                     <td className="px-4 py-3">₹{product.offerPrice}</td>
                     <td className="px-4 py-3 w-48">
                       <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => router.push(`/seller?productId=${product._id}`)}
+                          className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-4 bg-blue-600 text-white text-sm rounded-md"
+                        >
+                          <span>Edit</span>
+                        </button>
                         <button
                           onClick={() => router.push(`/product/${product._id}`)}
                           className="flex items-center justify-center gap-1 h-9 min-w-[88px] px-4 bg-rose-600 text-white text-sm rounded-md"

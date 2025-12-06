@@ -35,35 +35,96 @@ const Product = () => {
     const [selectedSize, setSelectedSize] = useState('');
 
     const fetchProductData = async () => {
-        const product = products.find(product => product._id === id);
-        setProductData(product);
-        
-        // Initialize color and size selection
-        if (product && product.colorOptions && product.colorOptions.length > 0) {
-            const firstColor = product.colorOptions[0].color;
-            setSelectedColor(firstColor);
-            
-            const firstColorSizes = product.colorOptions.find(c => c.color === firstColor)?.sizes || [];
-            if (firstColorSizes.length > 0) {
-                setSelectedSize(firstColorSizes[0].size);
+        try {
+            // First try to get fresh data from API
+            const response = await fetch(`/api/product/${id}`);
+            if (response.ok) {
+                const freshProduct = await response.json();
+                setProductData(freshProduct);
+                
+                // Initialize color and size selection
+                if (freshProduct && freshProduct.colorOptions && freshProduct.colorOptions.length > 0) {
+                    const firstColor = freshProduct.colorOptions[0].color;
+                    setSelectedColor(firstColor);
+                    
+                    const firstColorSizes = freshProduct.colorOptions.find(c => c.color === firstColor)?.sizes || [];
+                    if (firstColorSizes.length > 0) {
+                        setSelectedSize(firstColorSizes[0].size);
+                    }
+                }
+                
+                // Find similar variants from context
+                const similarVariants = products.filter(p => 
+                    p._id !== id && 
+                    p.category === freshProduct.category && 
+                    p.subCategory === freshProduct.subCategory && 
+                    p.sellerId === freshProduct.sellerId
+                );
+                setVariants(similarVariants);
+            } else {
+                // Fallback to context data if API fails
+                const product = products.find(product => product._id === id);
+                setProductData(product);
+                
+                // Initialize color and size selection
+                if (product && product.colorOptions && product.colorOptions.length > 0) {
+                    const firstColor = product.colorOptions[0].color;
+                    setSelectedColor(firstColor);
+                    
+                    const firstColorSizes = product.colorOptions.find(c => c.color === firstColor)?.sizes || [];
+                    if (firstColorSizes.length > 0) {
+                        setSelectedSize(firstColorSizes[0].size);
+                    }
+                }
+                
+                // Find similar variants
+                if (product) {
+                    const similarVariants = products.filter(p => 
+                        p._id !== id && 
+                        p.category === product.category && 
+                        p.subCategory === product.subCategory && 
+                        p.sellerId === product.sellerId
+                    );
+                    setVariants(similarVariants);
+                }
             }
-        }
-        
-        // Find similar variants
-        if (product) {
-            const similarVariants = products.filter(p => 
-                p._id !== id && 
-                p.category === product.category && 
-                p.subCategory === product.subCategory && 
-                p.sellerId === product.sellerId
-            );
-            setVariants(similarVariants);
+        } catch (error) {
+            console.error("Error fetching product data:", error);
+            // Fallback to context data
+            const product = products.find(product => product._id === id);
+            setProductData(product);
         }
     }
 
     useEffect(() => {
         fetchProductData();
-    }, [id, products.length])
+    }, [id])
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchProductData();
+            }
+        };
+
+        const handleFocus = () => {
+            fetchProductData();
+        };
+
+        const handlePopState = () => {
+            fetchProductData();
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [id])
 
     const sizesForColor = (color) => {
         const found = productData?.colorOptions?.find((c) => c.color === color);
@@ -206,9 +267,9 @@ const Product = () => {
                             <div className="mt-4">
                                 <p className="text-sm font-medium mb-1">Sizes available</p>
                                 <div className="flex flex-wrap gap-2">
-                                    {sizesForColor(selectedColor).map((size) => (
+                                    {sizesForColor(selectedColor).map((size, index) => (
                                         <button
-                                            key={size}
+                                            key={`${size}-${index}`}
                                             type="button"
                                             onClick={() => setSelectedSize(size)}
                                             className={`px-4 py-1 rounded-full border text-sm ${
