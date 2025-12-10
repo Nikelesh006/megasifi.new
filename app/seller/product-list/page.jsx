@@ -16,10 +16,8 @@ const ProductList = () => {
   const fetchSellerProduct = async () => {
     try {
       setLoading(true);
-      const token = await getToken();
-      const { data } = await axios.get("/api/product/seller-list", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Fetch all products instead of seller-specific products
+      const { data } = await axios.get("/api/product/list");
 
       const productList = Array.isArray(data) ? data : data?.data || [];
       setProducts(productList);
@@ -96,12 +94,10 @@ const ProductList = () => {
     }
   };
 
-  // Fetch products ONLY when user changes (mount/login)
+  // Fetch products on component mount
   useEffect(() => {
-    if (user) {
-      fetchSellerProduct();
-    }
-  }, [user]);
+    fetchSellerProduct();
+  }, []);
 
   const allSelected =
     products.length > 0 && selectedProductIds.length === products.length;

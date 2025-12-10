@@ -90,14 +90,7 @@ const AddProduct = () => {
       return;
     }
 
-    const hasValidSizes = colorOptions.every(opt => 
-      opt.sizes && opt.sizes.length > 0
-    );
-
-    if (!hasValidSizes) {
-      toast.error('Each colour must have at least one size');
-      return;
-    }
+    // sizes are optional; allow opt.sizes to be [] for products like sarees
 
     const formData = new FormData();
     formData.append("name", name);
@@ -365,6 +358,9 @@ const AddProduct = () => {
                     </label>
                   ))}
                 </div>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Tick sizes only if this product has sizes. For sarees or free-size items you can leave all sizes unchecked.
+                </p>
               </div>
             ))}
           </div>

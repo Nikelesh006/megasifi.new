@@ -12,7 +12,7 @@ const SizeOptionSchema = new mongoose.Schema({
 const ColorOptionSchema = new mongoose.Schema({
     color: { type: String, required: true },
     images: [String],
-    sizes: [SizeOptionSchema],
+    sizes: { type: [SizeOptionSchema], default: [] },
 });
 
 const productSchema = new mongoose.Schema({

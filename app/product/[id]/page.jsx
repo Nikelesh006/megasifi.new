@@ -13,6 +13,7 @@ const Product = () => {
     const { id } = useParams();
 
     const { products, router, addToCart, currency } = useAppContext()
+    const [isClient, setIsClient] = useState(false);
 
     // Add delete handler to remove product via API and navigate away on success
     const handleDelete = async () => {
@@ -97,10 +98,18 @@ const Product = () => {
     }
 
     useEffect(() => {
-        fetchProductData();
-    }, [id])
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
+        if (isClient) {
+            fetchProductData();
+        }
+    }, [id, isClient])
+
+    useEffect(() => {
+        if (!isClient) return;
+        
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
                 fetchProductData();
@@ -124,7 +133,7 @@ const Product = () => {
             window.removeEventListener('focus', handleFocus);
             window.removeEventListener('popstate', handlePopState);
         };
-    }, [id])
+    }, [id, isClient])
 
     const sizesForColor = (color) => {
         const found = productData?.colorOptions?.find((c) => c.color === color);
@@ -132,33 +141,47 @@ const Product = () => {
     };
 
     const handleAddToCart = () => {
-        if (!selectedColor || !selectedSize) {
-            alert('Please select colour and size');
+        if (!selectedColor) {
+            alert('Please select colour');
+            return;
+        }
+
+        const availableSizes = sizesForColor(selectedColor);
+        
+        if (availableSizes.length > 0 && !selectedSize) {
+            alert('Please select size');
             return;
         }
 
         addToCart(productData._id, {
             color: selectedColor,
-            size: selectedSize,
+            size: availableSizes.length > 0 ? selectedSize : '',
             image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
         });
     };
 
     const handleBuyNow = () => {
-        if (!selectedColor || !selectedSize) {
-            alert('Please select colour and size');
+        if (!selectedColor) {
+            alert('Please select colour');
+            return;
+        }
+
+        const availableSizes = sizesForColor(selectedColor);
+        
+        if (availableSizes.length > 0 && !selectedSize) {
+            alert('Please select size');
             return;
         }
 
         addToCart(productData._id, {
             color: selectedColor,
-            size: selectedSize,
+            size: availableSizes.length > 0 ? selectedSize : '',
             image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
         });
         router.push('/cart');
     };
 
-    return productData ? (
+    return isClient && productData ? (
         <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -264,6 +287,7 @@ const Product = () => {
                                 </div>
                             </div>
 
+                            {sizesForColor(selectedColor).length > 0 && (
                             <div className="mt-4">
                                 <p className="text-sm font-medium mb-1">Sizes available</p>
                                 <div className="flex flex-wrap gap-2">
@@ -283,6 +307,7 @@ const Product = () => {
                                     ))}
                                 </div>
                             </div>
+                        )}
                         </>
                     )}
 

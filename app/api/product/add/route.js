@@ -53,16 +53,18 @@ export async function POST(request){
         const VALID_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
         const normalizedColors = colorOptions.map((opt) => {
-            if (!opt.color || !Array.isArray(opt.sizes) || !opt.sizes.length) {
-                throw new Error('Each colour must have at least one size');
+            if (!opt.color) {
+                throw new Error('Colour is required');
             }
-            const cleanSizes = [...new Set(opt.sizes)].filter((s) =>
+
+            const rawSizes = Array.isArray(opt.sizes) ? opt.sizes : [];
+            const cleanSizes = [...new Set(rawSizes)].filter((s) =>
                 VALID_SIZES.includes(s)
             );
-            if (!cleanSizes.length) throw new Error('Invalid sizes');
+
             return {
                 color: opt.color.toLowerCase(),
-                sizes: cleanSizes.map((s) => ({ size: s, stock: 0 })),
+                sizes: cleanSizes.map((s) => ({ size: s, stock: 0 })), // may be []
                 images: opt.images || [],
             };
         });
