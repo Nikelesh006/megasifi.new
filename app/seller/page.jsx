@@ -69,8 +69,21 @@ const AddProduct = () => {
             imgs[6] || '',
           ]);
 
-          // colorOptions with sizes
-          setColorOptions(data.colorOptions || []);
+          // colorOptions with sizes - map DB structure to form structure; allow empty sizes
+          console.log("Loading product data:", data.colorOptions);
+          const mappedColors = (data.colorOptions || []).map((opt) => {
+            console.log("Processing color option:", opt);
+            const sizes = Array.isArray(opt.sizes)
+              ? opt.sizes.map((s) => typeof s === 'object' ? s.size : s).filter(Boolean)
+              : [];
+            console.log("Mapped sizes:", sizes);
+            return {
+              color: opt.color,
+              sizes: sizes
+            };
+          });
+          console.log("Final mapped colors:", mappedColors);
+          setColorOptions(mappedColors);
         } else {
           toast.error('Failed to load product data');
         }
@@ -92,6 +105,7 @@ const AddProduct = () => {
 
     // sizes are optional; allow opt.sizes to be [] for products like sarees
 
+    console.log("Submitting colorOptions:", colorOptions);
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
@@ -338,15 +352,15 @@ const AddProduct = () => {
                     <label key={size} className="flex items-center gap-2 text-xs sm:text-sm">
                       <input
                         type="checkbox"
-                        checked={opt.sizes.some(s => typeof s === 'object' ? s.size === size : s === size)}
+                        checked={opt.sizes.includes(size)}
                         onChange={() =>
                           setColorOptions((prev) =>
                             prev.map((c, i) =>
                               i === index
                                 ? {
                                     ...c,
-                                    sizes: c.sizes.some(s => typeof s === 'object' ? s.size === size : s === size)
-                                      ? c.sizes.filter(s => typeof s === 'object' ? s.size !== size : s !== size)
+                                    sizes: c.sizes.includes(size)
+                                      ? c.sizes.filter(s => s !== size)
                                       : [...c.sizes, size]
                                   }
                                 : c

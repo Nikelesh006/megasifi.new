@@ -5,6 +5,8 @@ import { getAuth } from "@clerk/nextjs/server";
 import fs from 'fs';
 import path from 'path';
 
+const VALID_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
 export async function GET(request, { params }) {
   try {
     await connectDB();
@@ -63,44 +65,35 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ success: false, message: "At least one color option is required" }, { status: 400 });
     }
     
-    // Validate color options have sizes and fix sizes structure
-    const fixedColorOptions = colorOptions.map(opt => {
-      let validSizes = [];
-      
-      if (opt.sizes) {
-        validSizes = opt.sizes.map(size => {
-          // If it's already an object with size property, keep it
-          if (typeof size === 'object' && size !== null && size.size) {
-            return size;
-          }
-          // If it's a string, convert to object
-          if (typeof size === 'string') {
-            return {
-              size: size,
-              stock: 0
-            };
-          }
-          // Skip invalid entries
-          return null;
-        }).filter(Boolean); // Remove null entries
-      }
-      
-      return {
-        ...opt,
-        sizes: validSizes
-      };
-    });
+    // Normalize color options with optional sizes (same logic as create API)
+    console.log("PUT API - Received colorOptions:", colorOptions);
     
-    console.log("Fixed colorOptions:", fixedColorOptions);
-    
-    const hasValidSizes = fixedColorOptions.every(opt => 
-      opt.sizes && Array.isArray(opt.sizes) && opt.sizes.length > 0
-    );
-    
-    if (!hasValidSizes) {
-      console.log("No valid sizes found in colorOptions");
-      return NextResponse.json({ success: false, message: "Each color must have at least one size" }, { status: 400 });
+    let normalizedColors;
+    try {
+      normalizedColors = colorOptions.map((opt) => {
+        if (!opt.color) {
+          throw new Error('Colour is required');
+        }
+
+        const rawSizes = Array.isArray(opt.sizes) ? opt.sizes : [];
+        const cleanSizes = [...new Set(rawSizes)].filter((s) =>
+          VALID_SIZES.includes(s)
+        );
+
+        console.log(`Processing color ${opt.color}: rawSizes=`, rawSizes, "cleanSizes=", cleanSizes);
+
+        return {
+          color: opt.color.toLowerCase(),
+          sizes: cleanSizes.map((s) => ({ size: s, stock: 0 })), // may be []
+          images: opt.images || [],
+        };
+      });
+    } catch (error) {
+      console.log("Error normalizing colors:", error);
+      return NextResponse.json({ success: false, message: "Error processing color options: " + error.message }, { status: 400 });
     }
+    
+    console.log("PUT API - Normalized colors:", normalizedColors);
     
     const update = {
       name,
@@ -110,7 +103,7 @@ export async function PUT(request, { params }) {
       subCategory,
       price: Number(price),
       offerPrice: Number(offerPrice),
-      colorOptions: fixedColorOptions,
+      colorOptions: normalizedColors,
       date: Date.now(),
     };
     
