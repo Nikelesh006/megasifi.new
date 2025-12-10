@@ -13,8 +13,6 @@ const Product = () => {
     const { id } = useParams();
 
     const { products, router, addToCart, currency } = useAppContext()
-    const [isClient, setIsClient] = useState(false);
-
     // Add delete handler to remove product via API and navigate away on success
     const handleDelete = async () => {
         if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
@@ -98,17 +96,10 @@ const Product = () => {
     }
 
     useEffect(() => {
-        setIsClient(true);
-    }, []);
+        fetchProductData();
+    }, [id])
 
     useEffect(() => {
-        if (isClient) {
-            fetchProductData();
-        }
-    }, [id, isClient])
-
-    useEffect(() => {
-        if (!isClient) return;
         
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
@@ -133,7 +124,7 @@ const Product = () => {
             window.removeEventListener('focus', handleFocus);
             window.removeEventListener('popstate', handlePopState);
         };
-    }, [id, isClient])
+    }, [id])
 
     const sizesForColor = (color) => {
         const found = productData?.colorOptions?.find((c) => c.color === color);
@@ -181,7 +172,7 @@ const Product = () => {
         router.push('/cart');
     };
 
-    return isClient && productData ? (
+    return productData ? (
         <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -312,10 +303,10 @@ const Product = () => {
                     )}
 
                     <div className="flex items-center mt-10 gap-4">
-                        <button onClick={handleAddToCart} className="w-full py-3.5 border border-rose-600 text-rose-600 hover:bg-rose-50 transition">
+                        <button type="button" onClick={handleAddToCart} className="w-full py-3.5 border border-rose-600 text-rose-600 hover:bg-rose-50 active:scale-[0.98] transition">
                             Add to Cart
                         </button>
-                        <button onClick={handleBuyNow} className="w-full py-3.5 bg-rose-500 text-white hover:bg-rose-600 transition">
+                        <button type="button" onClick={handleBuyNow} className="w-full py-3.5 bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] transition">
                             Buy now
                         </button>
                     </div>
