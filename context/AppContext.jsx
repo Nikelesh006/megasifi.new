@@ -69,17 +69,32 @@ export const AppContextProvider = (props) => {
   const addToCart = async (itemId, options = {}) => {
     const { color, size, image } = options;
     
-    if (!color || !size) {
-      toast.error('Please select color and size');
+    if (!color) {
+      toast.error('Please select color');
+      return;
+    }
+
+    // Check if the selected color has sizes available
+    const product = products.find(p => p._id === itemId);
+    if (!product) {
+      toast.error('Product not found');
+      return;
+    }
+
+    const colorOption = product.colorOptions?.find(c => c.color === color);
+    const hasSizes = colorOption && colorOption.sizes && colorOption.sizes.length > 0;
+    
+    if (hasSizes && !size) {
+      toast.error('Please select size');
       return;
     }
 
     // Create a unique key for the variant
-    const variantKey = `${itemId}-${color}-${size}`;
+    const variantKey = `${itemId}-${color}-${size || 'no-size'}`;
     
     let cartData = structuredClone(cartItems);
     const existingItemIndex = cartData.findIndex(item => 
-      item.productId === itemId && item.color === color && item.size === size
+      item.productId === itemId && item.color === color && (item.size === size || (!item.size && !size))
     );
     
     if (existingItemIndex >= 0) {
@@ -96,7 +111,7 @@ export const AppContextProvider = (props) => {
         name: product.name,
         price: product.offerPrice,
         color,
-        size,
+        size: size || '',
         image: image || product.image[0],
         qty: 1
       });
