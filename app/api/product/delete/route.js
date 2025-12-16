@@ -23,7 +23,7 @@ export async function DELETE(request) {
 
     await connectDB();
 
-    const deletedProduct = await Product.findOneAndDelete({ _id: productId, userId });
+    const deletedProduct = await Product.findOneAndDelete({ _id: productId, userId: userId });
 
     if (!deletedProduct) {
       return NextResponse.json({ success: false, message: "Product not found" });

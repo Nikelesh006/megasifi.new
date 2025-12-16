@@ -23,6 +23,11 @@ const nextConfig = {
             },
         ],
     },
+    api: {
+        bodyParser: {
+            sizeLimit: '50mb', // Increase payload size limit
+        },
+    },
 };
 
 export default nextConfig;
