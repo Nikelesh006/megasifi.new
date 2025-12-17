@@ -44,13 +44,30 @@ export async function POST(request){
                 sellerId = product.sellerId
             }
 
+            // Get product image (first image from product or color-specific image)
+            let productImage = '';
+            if (item.image) {
+                productImage = item.image; // Use image from cart item if available
+            } else if (product.image && product.image.length > 0) {
+                productImage = product.image[0]; // Use first product image as fallback
+            } else if (product.colorOptions && item.color) {
+                // Try to get image from color-specific options
+                const colorOption = product.colorOptions.find(opt => opt.color === item.color.toLowerCase());
+                if (colorOption && colorOption.images && colorOption.images.length > 0) {
+                    productImage = colorOption.images[0];
+                } else if (product.image && product.image.length > 0) {
+                    productImage = product.image[0];
+                }
+            }
+
             amount += (item.price || product.offerPrice) * item.qty
             orderItems.push({
                 product: product._id,
                 quantity: item.qty,
                 price: item.price || product.offerPrice,
                 size: item.size || '', 
-                color: item.color
+                color: item.color,
+                image: productImage // NEW: store product image URL
             })
         }
 

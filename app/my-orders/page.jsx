@@ -7,10 +7,9 @@ import Loading from "@/components/Loading";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-
 const MyOrders = () => {
 
-    const { currency, getToken, user } = useAppContext();
+    const { currency, getToken, user, router } = useAppContext();
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,14 +52,39 @@ const MyOrders = () => {
                     {orders.length === 0 ? (
                         <p className="py-6 text-gray-500">No orders yet.</p>
                     ) : (
-                    orders.map((order, index) => (
+                    orders.map((order, index) => {
+                        const firstItem = order.items?.[0];
+                        return (
                         <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-b border-gray-300">
                             <div className="flex-1 flex gap-5 max-w-80">
-                                <Image
-                                    className="max-w-16 max-h-16 object-cover"
-                                    src={assets.box_icon}
-                                    alt="box_icon"
-                                />
+                                <div className="flex-shrink-0">
+                                    {firstItem?.image ? (
+                                        <div 
+                                            className="cursor-pointer hover:opacity-80 transition-opacity"
+                                            onClick={() => {
+                                                if (firstItem.product?._id) {
+                                                    router.push(`/product/${firstItem.product._id}`);
+                                                } else if (firstItem.product) {
+                                                    router.push(`/product/${firstItem.product}`);
+                                                }
+                                            }}
+                                        >
+                                            <Image
+                                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                                src={firstItem.image}
+                                                alt={firstItem.product?.name || 'Product image'}
+                                                width={64}
+                                                height={64}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Image
+                                            className="max-w-16 max-h-16 object-cover"
+                                            src={assets.box_icon}
+                                            alt="box_icon"
+                                        />
+                                    )}
+                                </div>
                                 <p className="flex flex-col gap-3">
                                     <span className="font-medium text-base">
                                         {order.items?.map((item) => {
@@ -98,7 +122,8 @@ const MyOrders = () => {
                                 </p>
                             </div>
                         </div>
-                    )))}
+                        );
+                    }))}
                 </div>)}
             </div>
         </div>

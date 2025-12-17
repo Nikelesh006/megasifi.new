@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 const Orders = () => {
 
-    const { currency, getToken, user } = useAppContext();
+    const { currency, getToken, user, router } = useAppContext();
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,7 +19,10 @@ const Orders = () => {
         try{
             const token = await getToken()
 
-            const { data } = await axios.get('/api/order/seller-order', { headers: { Authorization: `Bearer ${token}` } })
+            const { data } = await axios.get('/api/order/seller-order', { 
+                headers: { Authorization: `Bearer ${token}` },
+                cache: 'no-store'
+            })
 
             if(data.success){
                 setOrders(data.orders);
@@ -47,20 +50,45 @@ const Orders = () => {
             {loading ? <Loading /> : <div className="md:p-10 p-4 space-y-5">
                 <h2 className="text-lg font-medium">Orders</h2>
                 <div className="max-w-4xl rounded-md">
-                    {orders.map((order, index) => (
+                    {orders.map((order, index) => {
+                        const firstItem = order.items?.[0];
+                        return (
                         <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-t border-gray-300">
                             <div className="flex-1 flex gap-5 max-w-80">
-                                <Image
-                                    className="max-w-16 max-h-16 object-cover"
-                                    src={assets.box_icon}
-                                    alt="box_icon"
-                                />
+                                <div className="flex-shrink-0">
+                                    {firstItem?.image ? (
+                                        <div 
+                                            className="cursor-pointer hover:opacity-80 transition-opacity"
+                                            onClick={() => {
+                                                if (firstItem.product?._id) {
+                                                    router.push(`/product/${firstItem.product._id}`);
+                                                } else if (firstItem.product) {
+                                                    router.push(`/product/${firstItem.product}`);
+                                                }
+                                            }}
+                                        >
+                                            <Image
+                                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                                src={firstItem.image}
+                                                alt={firstItem.product?.name || 'Product image'}
+                                                width={64}
+                                                height={64}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Image
+                                            className="max-w-16 max-h-16 object-cover"
+                                            src={assets.box_icon}
+                                            alt="box_icon"
+                                        />
+                                    )}
+                                </div>
                                 <p className="flex flex-col gap-3">
                                     <span className="font-medium">
                                         {order.items.map((item) => {
                                             const size = item.size || 'N/A';
                                             const color = item.color || 'N/A';
-                                            return `${item.product.name} (Size: ${size}, Color: ${color}) x ${item.quantity}`;
+                                            return `${item.product?.name || 'Product'} (Size: ${size}, Color: ${color}) x ${item.quantity}`;
                                         }).join(", ")}
                                     </span>
                                     <span>Items : {order.items.length}</span>
@@ -87,7 +115,8 @@ const Orders = () => {
                                 </p>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>}
             <Footer />

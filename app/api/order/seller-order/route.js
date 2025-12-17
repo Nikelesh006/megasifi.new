@@ -21,14 +21,8 @@ export async function GET(request) {
 
     await connectDB();
 
-    const sellerProducts = await Product.find({ userId }).select("_id");
-    const productIds = sellerProducts.map((product) => product._id);
-
-    if (productIds.length === 0) {
-      return NextResponse.json({ success: true, orders: [] });
-    }
-
-    const orders = await Order.find({ "items.product": { $in: productIds } })
+    // Return ALL orders for ALL sellers as requested
+    const orders = await Order.find({})
       .populate("items.product")
       .sort({ date: -1 })
       .lean();

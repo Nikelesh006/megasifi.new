@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema(
         price: { type: Number, required: true },
         size: { type: String, required: false },
         color: { type: String, required: true },
+        image: { type: String, required: false },
       },
     ],
     amount: { type: Number, required: true },
