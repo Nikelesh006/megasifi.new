@@ -49,7 +49,7 @@ export async function POST(request){
                 product: product._id,
                 quantity: item.qty,
                 price: item.price || product.offerPrice,
-                size: item.size,
+                size: item.size || '', 
                 color: item.color
             })
         }

@@ -96,10 +96,12 @@ const ProductCard = ({ product }) => {
 
         {/* Add to cart button - Mobile: CategoryProductCard style, Desktop: Original style */}
         <button
-          className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2 md:w-full md:mt-3 md:px-4 md:py-2 md:border md:border-rose-500 md:bg-white md:text-rose-500 md:rounded-lg md:hover:bg-rose-500 md:hover:text-white md:transition-colors md:flex md:items-center md:justify-center md:gap-2"
+          className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2 md:w-full md:mt-3 md:px-4 md:py-2 md:border md:border-rose-500 md:bg-white md:text-rose-500 md:rounded-lg md:hover:bg-rose-500 hover:text-white md:transition-colors md:flex md:items-center md:justify-center md:gap-2"
           onClick={(e) => {
             e.stopPropagation();
-            addToCart(product._id);
+            // Show alert for color and size selection, then redirect
+            alert('Please select color and size');
+            router.push('/product/' + product._id);
           }}
         >
           <ShoppingCart className="w-4 h-4 md:w-4 md:h-4" />
