@@ -6,7 +6,8 @@ export const products = [
     name: "Apple Earphones",
     description: "Noise-cancellation, 40-hour battery",
     rating: 4.5,
-    price: "299.99",
+    price: "399.99",
+    offerPrice: "299.99",
     imgSrc: assets.saree_linen_image,
   },
   {
@@ -14,7 +15,8 @@ export const products = [
     name: "Bose QuietComfort 45",
     description: "Noise Cancellation, 24-hour battery",
     rating: 4.5,
-    price: "329.99",
+    price: "429.99",
+    offerPrice: "329.99",
     imgSrc: assets.saree_grey_image,
   },
   {
@@ -22,7 +24,8 @@ export const products = [
     name: "Samsung Galaxy S23",
     description: "Fitness Tracking, AMOLED Display",
     rating: 4.5,
-    price: "799.99",
+    price: "999.99",
+    offerPrice: "799.99",
     imgSrc: assets.samsung_s23phone_image,
   },
   {
@@ -30,7 +33,8 @@ export const products = [
     name: "Garmin Venu 2",
     description: "Noise Cancellation, 24-hour battery",
     rating: 4.5,
-    price: "349.99",
+    price: "449.99",
+    offerPrice: "349.99",
     imgSrc: assets.venu_watch_image,
   },
   {
@@ -38,7 +42,8 @@ export const products = [
     name: "PlayStation 5",
     description: "Ultra-HD, 825GB SSD, Ray Graphics",
     rating: 4.5,
-    price: "499.99",
+    price: "599.99",
+    offerPrice: "499.99",
     imgSrc: assets.apple_earphone_image,
   },
   {
