@@ -1,10 +1,10 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Search } from 'lucide-react';
 
-export default function SearchBar() {
+function SearchBarContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQ = searchParams.get('q') || '';
@@ -128,5 +128,30 @@ export default function SearchBar() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchBar() {
+  return (
+    <Suspense fallback={
+      <div className="relative w-full max-w-xl">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search by name, category, or list item..."
+            className="w-full rounded-full border px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent"
+            disabled
+          />
+          <button
+            className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+            aria-label="Search"
+          >
+            <Search className="w-4 h-4 text-gray-400" />
+          </button>
+        </div>
+      </div>
+    }>
+      <SearchBarContent />
+    </Suspense>
   );
 }
