@@ -4,22 +4,33 @@ import { Search } from 'lucide-react';
 export const dynamic = 'force-dynamic'; // always fresh
 
 async function getSearchResults(q, page = 1) {
-  const params = new URLSearchParams();
-  if (q) params.set('q', q);
-  params.set('page', String(page));
+  try {
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    params.set('page', String(page));
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/search?${params.toString()}`, {
-    cache: 'no-store'
-  });
-  
-  if (!res.ok) return { items: [], total: 0, page: 1, totalPages: 1 };
-  return res.json();
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/search?${params.toString()}`, {
+      cache: 'no-store'
+    });
+    
+    if (!res.ok) {
+      console.error('Search page: API error', await res.text());
+      return { items: [], total: 0, page: 1, totalPages: 1 };
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error('Search page: Network error', error);
+    return { items: [], total: 0, page: 1, totalPages: 1 };
+  }
 }
 
 export default async function SearchPage({ searchParams }) {
-  const q = (searchParams.q || '').trim();
-  const page = Number(searchParams.page || 1);
+  const resolvedSearchParams = await searchParams;
+  const rawQParam = resolvedSearchParams.q ?? '';
+  const q = rawQParam.trim();
+  const page = Number(resolvedSearchParams.page || 1) || 1;
 
   const { items, total, totalPages } = await getSearchResults(q, page);
 
