@@ -14,12 +14,17 @@ export async function GET(req) {
 
     const q = rawQ.toLowerCase();
 
+    // Flipkart-like behavior (simplified):
+    // 1. Prefix match on name and brand.
+    // 2. Group by unique suggestion strings.
+    // 3. Rank by popularity and text similarity.
+
     const regex = new RegExp('^' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
 
-  const docs = await Product.find({
+    const docs = await Product.find({
       $or: [{ name: regex }, { brand: regex }, { searchKeywords: regex }],
     })
-      .sort({ popularity: -1, rating: -1 })
+      .sort({ popularity: -1, rating: -1 }) // importance first
       .limit(10)
       .lean();
 
@@ -37,6 +42,8 @@ export async function GET(req) {
     return NextResponse.json(
       suggestions.map((text) => ({
         text,
+        // optional: attach category to hint result page filters
+        // category: doc.category
       }))
     );
   } catch (err) {

@@ -70,7 +70,7 @@ export async function GET(req) {
       Product.find(filter)
         .sort(
           textQuery
-            ? { score: { $meta: 'textScore' } }
+            ? { score: { $meta: 'textScore' }, popularity: -1, rating: -1 }
             : { popularity: -1, rating: -1, createdAt: -1 }
         )
         .skip(skip)
