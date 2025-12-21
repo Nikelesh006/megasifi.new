@@ -1,7 +1,7 @@
 import React from 'react';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 
 const CategoryProductCard = ({ product }) => {
@@ -42,10 +42,10 @@ const CategoryProductCard = ({ product }) => {
         </button>
         
         {/* Discount badge if applicable */}
-        {product.originalPrice && product.originalPrice > product.offerPrice && (
+        {product.price && product.price > product.offerPrice && (
           <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
             <TrendingUp className="w-3 h-3" />
-            -{Math.round(((product.originalPrice - product.offerPrice) / product.originalPrice) * 100)}%
+            -{Math.round(((product.price - product.offerPrice) / product.price) * 100)}%
           </div>
         )}
       </div>
@@ -64,9 +64,9 @@ const CategoryProductCard = ({ product }) => {
           <span className="text-base font-semibold text-rose-700">
             ₹{product.offerPrice}
           </span>
-          {product.originalPrice && product.originalPrice > product.offerPrice && (
+          {product.price && product.price > product.offerPrice && (
             <span className="text-xs text-gray-400 line-through">
-              ₹{product.originalPrice}
+              ₹{product.price}
             </span>
           )}
         </div>

@@ -63,10 +63,10 @@ const ProductCard = ({ product }) => {
         </button>
 
         {/* Discount badge if applicable */}
-        {product.originalPrice && product.originalPrice > product.offerPrice && (
-          <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md md:hidden">
+        {product.price && product.price > product.offerPrice && (
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
             <span className="text-xs font-medium">
-              -{Math.round(((product.originalPrice - product.offerPrice) / product.originalPrice) * 100)}%
+              -{Math.round(((product.price - product.offerPrice) / product.price) * 100)}%
             </span>
           </div>
         )}
@@ -91,7 +91,7 @@ const ProductCard = ({ product }) => {
             {currency}{product.offerPrice}
           </span>
           <span className="text-xs text-gray-400 line-through md:text-xs md:text-gray-400 md:line-through">
-            {currency}{product.originalPrice}
+            {currency}{product.price}
           </span>
         </div>
 
