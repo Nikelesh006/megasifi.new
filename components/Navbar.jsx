@@ -9,6 +9,7 @@ import { useClerk, useUser, SignOutButton } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import { Home, ShoppingBag, Heart, Search, User, LogOut, Box, Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -172,53 +173,8 @@ const Navbar = () => {
         {/* Search Bar & Action Buttons - Desktop Only */}
         <div className="hidden md:flex items-center gap-5">
           {/* Search Bar */}
-          <div className="relative -ml-4 lg:-ml-6">
-            <input
-              type="text"
-              placeholder="Search by name, category, or list item..."
-              className="w-60 lg:w-72 xl:w-80 px-4 py-1.5 pr-10 rounded-full border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent text-sm"
-              value={searchQuery}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchQuery(value);
-                if (value) {
-                  setSubCategoryFilter('All');
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const value = e.currentTarget.value;
-                  setSearchQuery(value);
-                  if (value) {
-                    setSubCategoryFilter('All');
-                  }
-                }
-              }}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-7 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
-                aria-label="Clear search"
-              >
-                ×
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                const value = searchQuery || '';
-                setSearchQuery(value);
-                if (value) {
-                  setSubCategoryFilter('All');
-                }
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 transform"
-              aria-label="Search"
-            >
-              <Search className="w-4 h-4 text-gray-400" />
-            </button>
+          <div className="-ml-4 lg:-ml-6">
+            <SearchBar />
           </div>
 
           {/* Liked Items */}

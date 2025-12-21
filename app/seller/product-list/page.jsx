@@ -12,12 +12,18 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [search, setSearch] = useState('');
 
-  const fetchSellerProduct = async () => {
+  const fetchSellerProduct = async (searchQuery = '') => {
     try {
       setLoading(true);
-      // Fetch all products instead of seller-specific products
-      const { data } = await axios.get("/api/product/list");
+      // Fetch products with search filter
+      const params = new URLSearchParams();
+      if (searchQuery.trim()) {
+        params.set('q', searchQuery.trim());
+      }
+      
+      const { data } = await axios.get(`/api/product/list?${params.toString()}`);
 
       const productList = Array.isArray(data) ? data : data?.data || [];
       setProducts(productList);
@@ -94,6 +100,16 @@ const ProductList = () => {
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchSellerProduct(search);
+  };
+
+  const handleClearSearch = () => {
+    setSearch('');
+    fetchSellerProduct('');
+  };
+
   // Fetch products on component mount
   useEffect(() => {
     fetchSellerProduct();
@@ -110,12 +126,19 @@ const ProductList = () => {
         </div>
       ) : products.length === 0 ? (
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-gray-500">No products added yet.</p>
+          <p className="text-gray-500">
+            {search ? `No products found matching "${search}".` : 'No products added yet.'}
+          </p>
         </div>
       ) : (
         <div className="w-full max-w-full mx-auto p-4 sm:p-6 lg:p-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 mb-6 border-b border-gray-200">
-            <h2 className="text-xl sm:text-lg font-medium text-gray-900">All Products</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <h2 className="text-xl sm:text-lg font-medium text-gray-900">All Products</h2>
+              <span className="text-sm text-gray-500">
+                {products.length} item{products.length !== 1 ? 's' : ''}
+              </span>
+            </div>
             {selectedProductIds.length > 0 && (
               <button
                 onClick={handleDeleteSelected}
@@ -125,6 +148,37 @@ const ProductList = () => {
               </button>
             )}
           </div>
+
+          {/* Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="mb-6">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name, brand, category or sub-category..."
+                className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent w-full"
+              />
+              <div className="flex gap-2 sm:gap-3">
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm rounded-md bg-rose-500 hover:bg-rose-600 text-white transition-colors w-full sm:w-auto min-w-[80px]"
+                >
+                  Search
+                </button>
+                {search && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="px-3 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto min-w-[60px]"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+
           <div className="w-full overflow-hidden rounded-lg bg-white shadow-sm border border-gray-200">
             {/* Mobile Card View */}
             <div className="md:hidden w-full">
