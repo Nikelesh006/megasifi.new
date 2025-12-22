@@ -10,7 +10,7 @@ export default function FAQPage() {
     },
     {
       question: 'How long does shipping take?',
-      answer: 'Standard shipping typically takes 3-5 business days. Express shipping options are available at checkout.'
+      answer: 'Standard shipping typically takes 2-5 business days. Express shipping options are available at checkout.'
     },
     {
       question: 'What is your return policy?',
