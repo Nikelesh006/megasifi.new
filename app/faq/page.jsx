@@ -14,19 +14,19 @@ export default function FAQPage() {
     },
     {
       question: 'What is your return policy?',
-      answer: 'We offer a 30-day return policy. Items must be unworn, with tags attached, and in their original packaging.'
+      answer: 'We offer a 8-12 days return policy. Items must be unworn, with tags attached, and in their original packaging.'
     },
     {
       question: 'How do I track my order?',
       answer: 'Once your order ships, you will receive a tracking number via email to monitor your package\'s journey.'
     },
     {
-      question: 'Do you ship internationally?',
-      answer: 'Yes, we ship worldwide. International shipping rates and delivery times vary by destination.'
+      question: 'Do you ship all over India?',
+      answer: 'Yes, we ship all over India.Shipping rates and delivery times vary by destination.'
     },
     {
       question: 'How can I contact customer service?',
-      answer: 'You can reach our customer service team at support@megasifi.com or call us at +1-555-123-4567 during business hours.'
+      answer: 'You can reach our customer service team at megasifidrop@gmail.com or call us at +91-9043869570 during business hours.'
     }
   ];
 
