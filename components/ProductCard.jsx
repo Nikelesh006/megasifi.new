@@ -1,13 +1,14 @@
-'use client';
 import React, { useEffect, useState } from 'react';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 const ProductCard = ({ product }) => {
   const { currency, router, addToCart, isLiked, toggleLike } = useAppContext();
   const [liked, setLiked] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   // Sync local liked state with global state
   useEffect(() => {
@@ -22,6 +23,67 @@ const ProductCard = ({ product }) => {
 
     // Use global toggleLike function
     toggleLike(product._id);
+  };
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    
+    if (isNavigating) return; // Prevent double-click
+    
+    setIsNavigating(true);
+    
+    try {
+      // Redirect immediately
+      await router.push('/product/' + product._id);
+      
+      // Check if mobile device
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      
+      // Show toast message after navigation starts
+      toast(
+        <div className={`flex items-start gap-3 w-full ${isMobile ? 'py-2' : 'py-2'}`}>
+          <div className="flex-shrink-0 mt-0.5">
+            <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center shadow-sm">
+              <span className="text-white font-bold text-sm">!</span>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className={`font-medium text-gray-900 ${isMobile ? 'text-sm' : 'text-sm'}`}>Please select options</p>
+            <p className={`text-gray-600 ${isMobile ? 'text-xs' : 'text-xs'}`}>Choose color and size to continue</p>
+          </div>
+        </div>,
+        {
+          duration: 4000, // 4 seconds for both mobile and desktop
+          position: isMobile ? 'top-center' : 'top-center',
+          style: (t) => ({
+            background: '#fff',
+            color: '#1f2937',
+            borderLeft: '4px solid #dc2626',
+            borderTop: '2px solid #dc2626',
+            borderRight: '2px solid #dc2626',
+            borderBottom: '2px solid #dc2626',
+            borderRadius: '0.5rem',
+            boxShadow: '0 4px 12px -1px rgba(220, 38, 38, 0.15), 0 2px 6px -1px rgba(220, 38, 38, 0.1)',
+            padding: isMobile ? '0.75rem 1rem' : '0.85rem 1.15rem',
+            fontSize: isMobile ? '0.875rem' : '0.95rem',
+            maxWidth: isMobile ? 'calc(100% - 2rem)' : '30rem',
+            width: isMobile ? '100%' : 'auto',
+            margin: isMobile ? '0 auto 0' : '0 auto',
+            boxSizing: 'border-box',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            right: 'auto',
+            top: isMobile ? '1rem' : '5rem',
+            bottom: isMobile ? 'auto' : 'auto',
+            zIndex: 9999,
+          }),
+        }
+      );
+    } catch (error) {
+      console.error('Error navigating to product:', error);
+    } finally {
+      setIsNavigating(false);
+    }
   };
 
   return (
@@ -81,9 +143,7 @@ const ProductCard = ({ product }) => {
         <p className="text-xs text-gray-500 truncate mt-1 flex-1 md:text-xs md:text-gray-500 md:truncate md:mt-1 md:flex-1">
           {product.description}
         </p>
-        <p className="text-xs text-gray-500">
-          Size: {product.size} · Color: {product.color}
-        </p>
+        {/* Size and color removed from home card as per request */}
 
         {/* Price */}
         <div className="flex items-center gap-2 mt-2 md:flex md:items-center md:gap-2 md:mt-2">
@@ -97,16 +157,25 @@ const ProductCard = ({ product }) => {
 
         {/* Add to cart button - Mobile: CategoryProductCard style, Desktop: Original style */}
         <button
-          className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2 md:w-full md:mt-3 md:px-4 md:py-2 md:border md:border-rose-500 md:bg-white md:text-rose-500 md:rounded-lg md:hover:bg-rose-500 hover:text-white md:transition-colors md:flex md:items-center md:justify-center md:gap-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Show alert for color and size selection, then redirect
-            alert('Please select color and size');
-            router.push('/product/' + product._id);
-          }}
+          className={`w-full mt-3 px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 md:w-full md:mt-3 md:px-4 md:py-2 md:border md:rounded-lg md:transition-colors md:flex md:items-center md:justify-center md:gap-2 ${
+            isNavigating 
+              ? 'border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed' 
+              : 'border-rose-500 bg-white text-rose-500 hover:bg-rose-500 hover:text-white md:border-rose-500 md:bg-white md:text-rose-500 md:hover:bg-rose-500 hover:text-white'
+          }`}
+          onClick={handleAddToCart}
+          disabled={isNavigating}
         >
-          <ShoppingCart className="w-4 h-4 md:w-4 md:h-4" />
-          <span className="text-sm md:text-sm">Add to Cart</span>
+          {isNavigating ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin md:w-4 md:h-4" />
+              <span className="text-sm md:text-sm">Loading...</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-4 h-4 md:w-4 md:h-4" />
+              <span className="text-sm md:text-sm">Add to Cart</span>
+            </>
+          )}
         </button>
       </div>
     </div>

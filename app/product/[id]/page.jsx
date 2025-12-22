@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { assets } from "@/assets/assets";
 import ProductCard from "@/components/ProductCard";
 import Image from "next/image";
@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
 import React from "react";
+import { Loader2 } from "lucide-react";
 
 const Product = () => {
 
@@ -29,9 +30,33 @@ const Product = () => {
 
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
-    const [variants, setVariants] = useState([]);
     const [selectedColor, setSelectedColor] = useState('');
     const [selectedSize, setSelectedSize] = useState('');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [isBuyingNow, setIsBuyingNow] = useState(false);
+
+    const featuredProducts = useMemo(() => {
+        if (!productData) return [];
+
+        const currentId = String(productData._id || id);
+        const sameCategory = products.filter(
+            (p) => p && String(p._id) !== currentId && p.category === productData.category
+        );
+
+        const sameSubCategory = sameCategory.filter(
+            (p) => p.subCategory === productData.subCategory
+        );
+
+        const combined = [...sameSubCategory, ...sameCategory.filter((p) => p.subCategory !== productData.subCategory)];
+        if (combined.length === 0) return [];
+
+        const hash = Array.from(currentId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const offset = hash % combined.length;
+        const rotated = [...combined.slice(offset), ...combined.slice(0, offset)];
+
+        return rotated.slice(0, 8);
+    }, [products, productData, id]);
 
     const fetchProductData = async () => {
         try {
@@ -51,15 +76,6 @@ const Product = () => {
                         setSelectedSize(firstColorSizes[0].size);
                     }
                 }
-                
-                // Find similar variants from context
-                const similarVariants = products.filter(p => 
-                    p._id !== id && 
-                    p.category === freshProduct.category && 
-                    p.subCategory === freshProduct.subCategory && 
-                    p.sellerId === freshProduct.sellerId
-                );
-                setVariants(similarVariants);
             } else {
                 // Fallback to context data if API fails
                 const product = products.find(product => product._id === id);
@@ -75,17 +91,6 @@ const Product = () => {
                         setSelectedSize(firstColorSizes[0].size);
                     }
                 }
-                
-                // Find similar variants
-                if (product) {
-                    const similarVariants = products.filter(p => 
-                        p._id !== id && 
-                        p.category === product.category && 
-                        p.subCategory === product.subCategory && 
-                        p.sellerId === product.sellerId
-                    );
-                    setVariants(similarVariants);
-                }
             }
         } catch (error) {
             console.error("Error fetching product data:", error);
@@ -98,6 +103,14 @@ const Product = () => {
     useEffect(() => {
         fetchProductData();
     }, [id])
+
+    useEffect(() => {
+        // Initialize current image index when product data loads
+        if (productData && productData.image.length > 0) {
+            setCurrentImageIndex(0);
+            setMainImage(productData.image[0]);
+        }
+    }, [productData])
 
     useEffect(() => {
         
@@ -131,7 +144,7 @@ const Product = () => {
         return found ? found.sizes.map((s) => s.size) : [];
     };
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!selectedColor) {
             alert('Please select colour');
             return;
@@ -144,14 +157,23 @@ const Product = () => {
             return;
         }
 
-        addToCart(productData._id, {
-            color: selectedColor,
-            size: availableSizes.length > 0 ? selectedSize : '',
-            image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
-        });
+        if (isAddingToCart) return; // Prevent double-click
+
+        setIsAddingToCart(true);
+        try {
+            await addToCart(productData._id, {
+                color: selectedColor,
+                size: availableSizes.length > 0 ? selectedSize : '',
+                image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
+            });
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+        } finally {
+            setIsAddingToCart(false);
+        }
     };
 
-    const handleBuyNow = () => {
+    const handleBuyNow = async () => {
         if (!selectedColor) {
             alert('Please select colour');
             return;
@@ -164,12 +186,55 @@ const Product = () => {
             return;
         }
 
-        addToCart(productData._id, {
-            color: selectedColor,
-            size: availableSizes.length > 0 ? selectedSize : '',
-            image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
-        });
-        router.push('/cart');
+        if (isBuyingNow) return; // Prevent double-click
+
+        setIsBuyingNow(true);
+        try {
+            await addToCart(productData._id, {
+                color: selectedColor,
+                size: availableSizes.length > 0 ? selectedSize : '',
+                image: productData.colorOptions?.find(c => c.color === selectedColor)?.images?.[0] || productData.image[0]
+            });
+            await router.push('/cart');
+        } catch (error) {
+            console.error('Error processing buy now:', error);
+        } finally {
+            setIsBuyingNow(false);
+        }
+    };
+
+    // Handle image navigation
+    const handleImageChange = (index) => {
+        setCurrentImageIndex(index);
+        setMainImage(productData.image[index]);
+    };
+
+    // Handle touch/swipe events for mobile
+    const handleTouchStart = (e) => {
+        const touch = e.touches[0];
+        const startX = touch.clientX;
+        return startX;
+    };
+
+    const handleTouchEnd = (e) => {
+        const touch = e.changedTouches[0];
+        const endX = touch.clientX;
+        return endX;
+    };
+
+    const handleSwipe = (startX, endX) => {
+        const threshold = 50; // Minimum swipe distance
+        const diff = startX - endX;
+        
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0 && currentImageIndex < productData.image.length - 1) {
+                // Swipe left - next image
+                handleImageChange(currentImageIndex + 1);
+            } else if (diff < 0 && currentImageIndex > 0) {
+                // Swipe right - previous image
+                handleImageChange(currentImageIndex - 1);
+            }
+        }
     };
 
     return productData ? (
@@ -178,32 +243,105 @@ const Product = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                 <div className="px-5 lg:px-16 xl:px-20">
                     <div className="rounded-lg overflow-hidden bg-gray-500/10 mb-4">
-                        <Image
-                            src={mainImage || productData.image[0]}
-                            alt="alt"
-                            className="w-full h-auto object-cover mix-blend-multiply"
-                            width={1280}
-                            height={720}
-                        />
+                        <div 
+                            className="relative touch-pan-y"
+                            onTouchStart={(e) => {
+                                e.currentTarget.dataset.startX = handleTouchStart(e);
+                            }}
+                            onTouchEnd={(e) => {
+                                const startX = parseFloat(e.currentTarget.dataset.startX);
+                                const endX = handleTouchEnd(e);
+                                handleSwipe(startX, endX);
+                            }}
+                        >
+                            <Image
+                                src={productData.image[currentImageIndex] || productData.image[0]}
+                                alt="alt"
+                                className="w-full h-auto object-cover mix-blend-multiply"
+                                width={1280}
+                                height={720}
+                            />
+                            {/* Mobile swipe indicators */}
+                            <div className="md:hidden absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                                {productData.image.map((_, index) => (
+                                    <div
+                                        key={index}
+                                        className={`w-2 h-2 rounded-full transition-colors ${
+                                            currentImageIndex === index
+                                                ? 'bg-white'
+                                                : 'bg-white/50'
+                                        }`}
+                                        onClick={() => handleImageChange(index)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-4">
-                        {productData.image.map((image, index) => (
-                            <div
-                                key={index}
-                                onClick={() => setMainImage(image)}
-                                className="cursor-pointer rounded-lg overflow-hidden bg-gray-500/10"
-                            >
-                                <Image
-                                    src={image}
-                                    alt="alt"
-                                    className="w-full h-auto object-cover mix-blend-multiply"
-                                    width={1280}
-                                    height={720}
-                                />
-                            </div>
+                    {/* Mobile swipeable gallery */}
+                    <div className="md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                        <div className="flex gap-2 pb-2">
+                            {productData.image.map((image, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => handleImageChange(index)}
+                                    className={`flex-shrink-0 w-24 cursor-pointer rounded-lg overflow-hidden bg-gray-500/10 snap-center transition-all ${
+                                        currentImageIndex === index ? 'ring-2 ring-rose-500' : ''
+                                    }`}
+                                >
+                                    <div className="relative">
+                                        <Image
+                                            src={image}
+                                            alt={`Thumbnail ${index + 1}`}
+                                            className="w-full h-24 object-cover mix-blend-multiply"
+                                            width={128}
+                                            height={128}
+                                        />
+                                        {/* Show +N overlay on 4th image when there are more than 4 images */}
+                                        {index === 3 && productData.image.length > 4 && (
+                                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                <span className="text-white font-semibold text-lg">
+                                                    +{productData.image.length - 3}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
 
-                        ))}
+                    {/* Desktop scrollable gallery */}
+                    <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                        <div className="flex gap-2 pb-2">
+                            {productData.image.map((image, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => handleImageChange(index)}
+                                    className={`flex-shrink-0 w-20 cursor-pointer rounded-lg overflow-hidden bg-gray-500/10 transition-all hover:ring-2 hover:ring-rose-500 ${
+                                        currentImageIndex === index ? 'ring-2 ring-rose-500' : ''
+                                    }`}
+                                >
+                                    <div className="relative">
+                                        <Image
+                                            src={image}
+                                            alt={`Thumbnail ${index + 1}`}
+                                            className="w-full h-20 object-cover mix-blend-multiply"
+                                            width={80}
+                                            height={80}
+                                        />
+                                        {/* Show +N overlay on 4th image when there are more than 4 images */}
+                                        {index === 3 && productData.image.length > 4 && (
+                                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                <span className="text-white font-semibold text-sm">
+                                                    +{productData.image.length - 3}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -303,35 +441,55 @@ const Product = () => {
                     )}
 
                     <div className="flex items-center mt-10 gap-4">
-                        <button type="button" onClick={handleAddToCart} className="w-full py-3.5 border border-rose-600 text-rose-600 hover:bg-rose-50 active:scale-[0.98] transition">
-                            Add to Cart
+                        <button 
+                            type="button" 
+                            onClick={handleAddToCart} 
+                            disabled={isAddingToCart || isBuyingNow}
+                            className={`w-full py-3.5 border transition flex items-center justify-center gap-2 ${
+                                isAddingToCart 
+                                    ? 'border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                    : 'border-rose-600 text-rose-600 hover:bg-rose-50 active:scale-[0.98]'
+                            }`}
+                        >
+                            {isAddingToCart ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>Adding...</span>
+                                </>
+                            ) : (
+                                <span>Add to Cart</span>
+                            )}
                         </button>
-                        <button type="button" onClick={handleBuyNow} className="w-full py-3.5 bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] transition">
-                            Buy now
+                        <button 
+                            type="button" 
+                            onClick={handleBuyNow} 
+                            disabled={isBuyingNow || isAddingToCart}
+                            className={`w-full py-3.5 transition flex items-center justify-center gap-2 ${
+                                isBuyingNow 
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                    : 'bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98]'
+                            }`}
+                        >
+                            {isBuyingNow ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>Processing...</span>
+                                </>
+                            ) : (
+                                <span>Buy now</span>
+                            )}
                         </button>
                     </div>
                 </div>
             </div>
-            
-            {/* Similar variants section */}
-            {variants.length > 0 && (
-                <section className="mt-10">
-                    <h3 className="text-lg font-semibold mb-4">More sizes & colors</h3>
-                    <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
-                        {variants.map((v) => (
-                            <ProductCard key={v._id} product={v} />
-                        ))}
-                    </div>
-                </section>
-            )}
-            
+
             <div className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-4 mt-16">
                     <p className="text-3xl font-medium">Featured <span className="font-medium text-rose-600">Products</span></p>
                     <div className="w-28 h-0.5 bg-rose-600 mt-2"></div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-6 mt-6 pb-14 w-full max-w-6xl mx-auto">
-                    {products.slice(0, 5).map((product, index) => <ProductCard key={index} product={product} />)}
+                    {featuredProducts.map((product) => <ProductCard key={product._id} product={product} />)}
                 </div>
                 <button className="px-8 py-2 mb-16 border rounded text-gray-500/70 hover:bg-slate-50/90 transition">
                     See more

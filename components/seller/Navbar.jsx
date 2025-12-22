@@ -20,10 +20,8 @@ const Navbar = ({ toggleSidebar }) => {
           <div className="w-6 h-0.5 bg-gray-600"></div>
         </button>
         
-        <Image onClick={()=>router.push('/')} className='w-28 lg:w-32 cursor-pointer' src={assets.logo_maroon_megasifi} alt="Megasifi Logo" />
+       
       </div>
-      
-      <button className='bg-gray-600 text-white px-5 py-2 sm:px-7 sm:py-2 rounded-full text-xs sm:text-sm'>Logout</button>
     </div>
   )
 }

@@ -1,40 +1,31 @@
 import React from "react";
-import { assets } from "@/assets/assets";
-import Image from "next/image";
 import Link from "next/link";
 
 const Banner = () => {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between md:pl-20 py-14 md:py-0 bg-[#E6E9F2] my-16 rounded-xl overflow-hidden">
-      <Image
-        className="max-w-56"
-        src={assets.footer_banner1}
-        alt="footer_banner1"
-      />
-      <div className="flex flex-col items-center justify-center text-center space-y-2 px-4 md:px-0">
-        <h2 className="text-2xl md:text-3xl font-semibold max-w-[290px]">
-          Level Up Your Clothing Experience
-        </h2>
-        <p className="max-w-[343px] font-medium text-gray-800/60">
-          Shop the latest trends and styles with our collection of high-quality clothing. From trendy fashion to comfortable basics, we have everything you need to look and feel your best.
-        </p>
-        <Link href="/all-products">
-          <button className="group flex items-center justify-center gap-1 px-12 py-2.5 bg-rose-600 rounded text-white">
-            Buy now
-            <Image className="group-hover:translate-x-1 transition" src={assets.arrow_icon_white} alt="arrow_icon_white" />
-          </button>
+    <div className="flex flex-col items-center justify-center py-10 bg-[#E6E9F2] my-16 rounded-xl overflow-hidden text-center px-6">
+      <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+        Help us improve Megasifi
+      </h2>
+      <p className="mt-2 max-w-2xl text-sm md:text-base font-medium text-gray-800/70">
+        Feel free to contact us if you have any suggestions for the site's improvements, new features you’d like to see, or if you face any errors while using the site.
+      </p>
+      <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=codecraft2k@gmail.com"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center justify-center px-8 py-2.5 bg-rose-600 hover:bg-rose-700 transition rounded text-white w-full sm:w-auto"
+        >
+          Contact us
+        </a>
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center px-8 py-2.5 border border-rose-600 text-rose-600 hover:bg-rose-50 transition rounded w-full sm:w-auto"
+        >
+          Contact page
         </Link>
       </div>
-      <Image
-        className="hidden md:block max-w-80"
-        src={assets.footer_banner2}
-        alt="footer_banner2"
-      />
-      <Image
-        className="md:hidden"
-        src={assets.footer_banner2}
-        alt="footer_banner2"
-      />
     </div>
   );
 };
