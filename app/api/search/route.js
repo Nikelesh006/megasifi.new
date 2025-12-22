@@ -39,6 +39,15 @@ export async function GET(req) {
     const limit = Number(searchParams.get('limit') || 24) || 24;
     const skip = (page - 1) * limit;
 
+    // Debug logging
+    console.log('SEARCH API', {
+      host: req.headers.get('host'),
+      q: rawQ,
+      category,
+      page,
+      limit
+    });
+
     const { textQuery, maxPrice } = parseQueryForPrice(rawQ);
 
     const filter = {};
@@ -66,6 +75,8 @@ export async function GET(req) {
       };
     }
 
+    console.log('SEARCH FILTER', filter);
+
     const [items, total] = await Promise.all([
       Product.find(filter)
         .sort(
@@ -78,6 +89,8 @@ export async function GET(req) {
         .lean(),
       Product.countDocuments(filter),
     ]);
+
+    console.log('SEARCH RESULTS COUNT', total);
 
     return NextResponse.json({
       items,

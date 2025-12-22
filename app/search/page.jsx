@@ -3,27 +3,31 @@ import { Search } from 'lucide-react';
 
 export const dynamic = 'force-dynamic'; // always fresh
 
-async function getSearchResults(q, page = 1) {
-  try {
-    const params = new URLSearchParams();
-    if (q) params.set('q', q);
-    params.set('page', String(page));
+async function fetchSearch(
+  q,
+  page,
+  baseUrl
+) {
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  params.set('page', String(page));
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/search?${params.toString()}`, {
-      cache: 'no-store'
-    });
-    
-    if (!res.ok) {
-      console.error('Search page: API error', await res.text());
-      return { items: [], total: 0, page: 1, totalPages: 1 };
-    }
-    
-    return res.json();
-  } catch (error) {
-    console.error('Search page: Network error', error);
+  const url = `${baseUrl}/api/search?${params.toString()}`;
+
+  let res;
+  try {
+    res = await fetch(url, { cache: 'no-store' });
+  } catch (err) {
+    console.error('Search page: Network error', err);
     return { items: [], total: 0, page: 1, totalPages: 1 };
   }
+
+  if (!res.ok) {
+    console.error('Search page: API error', await res.text());
+    return { items: [], total: 0, page: 1, totalPages: 1 };
+  }
+
+  return res.json();
 }
 
 export default async function SearchPage({ searchParams }) {
@@ -32,7 +36,13 @@ export default async function SearchPage({ searchParams }) {
   const q = rawQParam.trim();
   const page = Number(resolvedSearchParams.page || 1) || 1;
 
-  const { items, total, totalPages } = await getSearchResults(q, page);
+  // Build base URL from NEXT_PUBLIC_SITE_URL or fallback
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    // default to localhost for dev; in prod set NEXT_PUBLIC_SITE_URL to https://megasifi.shop
+    'http://localhost:3000';
+
+  const { items, total, totalPages } = await fetchSearch(q, page, baseUrl);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">

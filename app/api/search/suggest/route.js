@@ -8,6 +8,12 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const rawQ = (searchParams.get('q') || '').trim();
 
+    // Debug logging
+    console.log('SEARCH SUGGEST API', {
+      host: req.headers.get('host'),
+      q: rawQ
+    });
+
     if (!rawQ) {
       return NextResponse.json([]);
     }
@@ -27,6 +33,8 @@ export async function GET(req) {
       .sort({ popularity: -1, rating: -1 }) // importance first
       .limit(10)
       .lean();
+
+    console.log('SEARCH SUGGEST RESULTS COUNT', docs.length);
 
     const suggestionsSet = new Set();
 
