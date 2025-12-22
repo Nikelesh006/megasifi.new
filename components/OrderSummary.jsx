@@ -3,12 +3,14 @@ import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 const OrderSummary = () => {
   const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const fetchUserAddresses = async () => {
     try {
@@ -37,6 +39,9 @@ const OrderSummary = () => {
   };
 
   const createOrder = async () => {
+    if (isPlacingOrder) return; // Prevent double-click
+
+    setIsPlacingOrder(true);
     try {
       if (!selectedAddress) {
         return toast.error("Please select an address");
@@ -70,6 +75,8 @@ const OrderSummary = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -156,8 +163,23 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button onClick={createOrder} className="w-full bg-rose-600 text-white py-3 mt-5 hover:bg-rose-700">
-        Place Order
+      <button 
+        onClick={createOrder} 
+        disabled={isPlacingOrder}
+        className={`w-full py-3 mt-5 transition flex items-center justify-center gap-2 ${
+          isPlacingOrder 
+            ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+            : 'bg-rose-600 text-white hover:bg-rose-700'
+        }`}
+      >
+        {isPlacingOrder ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Placing Order...</span>
+          </>
+        ) : (
+          <span>Place Order</span>
+        )}
       </button>
     </div>
   );

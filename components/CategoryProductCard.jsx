@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
-import { Heart, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Heart, ShoppingCart, TrendingUp, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
 const CategoryProductCard = ({ product }) => {
   const { addToCart, router, isLiked, toggleLike } = useAppContext();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const handleAddToCart = (productId, e) => {
+  const handleAddToCart = async (productId, e) => {
     e.stopPropagation();
-    addToCart(productId);
+    
+    if (isAddingToCart) return; // Prevent double-click
+    
+    setIsAddingToCart(true);
+    try {
+      await addToCart(productId);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   return (
@@ -73,11 +84,25 @@ const CategoryProductCard = ({ product }) => {
         
         {/* Add to cart button */}
         <button
-          className="w-full mt-3 px-4 py-2 border border-rose-500 bg-white text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center gap-2"
+          className={`w-full mt-3 px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
+            isAddingToCart 
+              ? 'border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed' 
+              : 'border-rose-500 bg-white text-rose-500 hover:bg-rose-500 hover:text-white'
+          }`}
           onClick={(e) => handleAddToCart(product._id, e)}
+          disabled={isAddingToCart}
         >
-          <ShoppingCart className="w-4 h-4" />
-          Add to Cart
+          {isAddingToCart ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Adding...</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-4 h-4" />
+              <span>Add to Cart</span>
+            </>
+          )}
         </button>
       </div>
     </div>

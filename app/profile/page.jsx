@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Edit2, Save, X, Loader2 } from 'lucide-react';
 import { useAppContext } from "@/context/AppContext";
 import { useUser } from "@clerk/nextjs";
 
@@ -195,8 +195,17 @@ const ProfilePage = () => {
                     disabled={saving}
                     className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 disabled:bg-green-300 px-3 py-2 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
                   >
-                    <Save className="w-4 h-4" />
-                    <span>{saving ? 'Saving...' : 'Save'}</span>
+                    {saving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        <span>Save</span>
+                      </>
+                    )}
                   </button>
                   <button
                     onClick={handleCancel}
@@ -345,29 +354,6 @@ const ProfilePage = () => {
                       {profileData.bio || 'No bio added yet.'}
                     </p>
                   )}
-                </div>
-              </div>
-            </div>
-
-            {/* Account Statistics */}
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <h3 className="text-xl font-semibold text-rose-700 mb-4">Account Statistics</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-rose-50 p-4 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-rose-600">12</p>
-                  <p className="text-sm text-gray-600">Orders</p>
-                </div>
-                <div className="bg-pink-50 p-4 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-pink-600">8</p>
-                  <p className="text-sm text-gray-600">Wishlist</p>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-purple-600">3</p>
-                  <p className="text-sm text-gray-600">Reviews</p>
-                </div>
-                <div className="bg-indigo-50 p-4 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-indigo-600">2024</p>
-                  <p className="text-sm text-gray-600">Member Since</p>
                 </div>
               </div>
             </div>
