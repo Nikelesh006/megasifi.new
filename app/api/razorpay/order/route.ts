@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       razorpayOrder,
       internalOrderId: internalOrder._id,
+      keyId,
     });
   } catch (err: any) {
     console.error('Razorpay order error', err);

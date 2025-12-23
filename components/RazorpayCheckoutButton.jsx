@@ -17,14 +17,6 @@ export default function RazorpayCheckoutButton({
     try {
       setLoading(true);
 
-      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-      console.log('Razorpay key from env =', key);
-
-      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-        alert('Payment configuration missing (NEXT_PUBLIC_RAZORPAY_KEY_ID).');
-        return;
-      }
-
       if (!rzpReady || typeof window === 'undefined' || !window.Razorpay) {
         alert('Payment UI failed to load. Please refresh and try again.');
         return;
@@ -50,11 +42,13 @@ export default function RazorpayCheckoutButton({
         return;
       }
 
-      const { razorpayOrder, internalOrderId } = data;
+      const { razorpayOrder, internalOrderId, keyId } = data;
+
+      console.log('Razorpay key from server =', keyId);
 
       // 2) Open Razorpay checkout
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: keyId,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
         name: 'Megasifi',
