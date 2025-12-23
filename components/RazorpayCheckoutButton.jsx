@@ -10,11 +10,22 @@ export default function RazorpayCheckoutButton({
   userId,
 }) {
   const [loading, setLoading] = useState(false);
+  const [rzpReady, setRzpReady] = useState(false);
   const router = useRouter();
 
   const handlePlaceOrder = async () => {
     try {
       setLoading(true);
+
+      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+        alert('Payment configuration missing (NEXT_PUBLIC_RAZORPAY_KEY_ID).');
+        return;
+      }
+
+      if (!rzpReady || typeof window === 'undefined' || !window.Razorpay) {
+        alert('Payment UI failed to load. Please refresh and try again.');
+        return;
+      }
 
       // 1) Create order on our server
       const orderRes = await fetch('/api/razorpay/order', {
@@ -23,10 +34,16 @@ export default function RazorpayCheckoutButton({
         body: JSON.stringify({ amount, currency: 'INR', items, userId }),
       });
 
-      const data = await orderRes.json();
+      let data;
+      try {
+        data = await orderRes.json();
+      } catch (e) {
+        data = null;
+      }
+
       if (!orderRes.ok || !data.razorpayOrder?.id) {
         console.error('Order creation failed', data);
-        alert('Unable to start payment. Please try again.');
+        alert(data?.error || data?.message || `Unable to start payment (HTTP ${orderRes.status}).`);
         return;
       }
 
@@ -81,7 +98,11 @@ export default function RazorpayCheckoutButton({
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        onLoad={() => setRzpReady(true)}
+        onError={() => setRzpReady(false)}
+      />
       <button
         type="button"
         onClick={handlePlaceOrder}
