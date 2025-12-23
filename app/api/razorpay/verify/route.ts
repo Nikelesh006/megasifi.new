@@ -3,11 +3,17 @@ import crypto from 'crypto';
 import dbConnect from '@/lib/dbConnect';
 import Order from '@/models/Order';
 
-const keySecret = process.env.RAZORPAY_KEY_SECRET!;
-
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
+
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keySecret) {
+      return NextResponse.json(
+        { error: 'Razorpay key secret is not set' },
+        { status: 500 },
+      );
+    }
 
     const {
       razorpay_order_id,

@@ -3,21 +3,24 @@ import Razorpay from 'razorpay';
 import dbConnect from '@/lib/dbConnect';
 import Order from '@/models/Order';
 
-const keyId = process.env.RAZORPAY_KEY_ID!;
-const keySecret = process.env.RAZORPAY_KEY_SECRET!;
-
-if (!keyId || !keySecret) {
-  throw new Error('Razorpay keys are not set');
-}
-
-const razorpay = new Razorpay({
-  key_id: keyId,
-  key_secret: keySecret,
-});
-
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
+
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      return NextResponse.json(
+        { error: 'Razorpay keys are not set' },
+        { status: 500 },
+      );
+    }
+
+    const razorpay = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
 
     const body = await req.json();
     const {
