@@ -17,6 +17,9 @@ export default function RazorpayCheckoutButton({
     try {
       setLoading(true);
 
+      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      console.log('Razorpay key from env =', key);
+
       if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
         alert('Payment configuration missing (NEXT_PUBLIC_RAZORPAY_KEY_ID).');
         return;
