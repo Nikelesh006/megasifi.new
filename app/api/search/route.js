@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/config/db';
 import Product from '@/models/Product';
+import mongoose from 'mongoose';
 
 function parseQueryForPrice(raw) {
   let q = raw.toLowerCase();
@@ -28,6 +29,27 @@ function parseQueryForPrice(raw) {
   return { textQuery: raw.trim(), maxPrice: undefined };
 }
 
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildRegexFromQuery(textQuery) {
+  const stopWords = new Set(['for', 'the', 'a', 'an', 'of', 'and', 'or', 'to', 'in', 'on', 'with']);
+  const terms = textQuery
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .filter((t) => !stopWords.has(t.toLowerCase()))
+    .slice(0, 6);
+
+  if (!terms.length) {
+    return new RegExp(escapeRegExp(textQuery), 'i');
+  }
+
+  const pattern = terms.map((t) => `(?=.*${escapeRegExp(t)})`).join('') + '.*';
+  return new RegExp(pattern, 'i');
+}
+
 export async function GET(req) {
   try {
     await connectDB();
@@ -46,6 +68,12 @@ export async function GET(req) {
       category,
       page,
       limit
+    });
+
+    console.log('SEARCH ENV', {
+      mongodbUriSet: !!process.env.MONGODB_URI,
+      mongodbDb: process.env.MONGODB_DB,
+      connectedDbName: mongoose.connection?.name,
     });
 
     const { textQuery, maxPrice } = parseQueryForPrice(rawQ);
@@ -77,20 +105,72 @@ export async function GET(req) {
 
     console.log('SEARCH FILTER', filter);
 
-    const [items, total] = await Promise.all([
-      Product.find(filter)
-        .sort(
-          textQuery
-            ? { score: { $meta: 'textScore' }, popularity: -1, rating: -1 }
-            : { popularity: -1, rating: -1, createdAt: -1 }
-        )
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Product.countDocuments(filter),
-    ]);
+    let items = [];
+    let total = 0;
+    let usedFallback = false;
 
-    console.log('SEARCH RESULTS COUNT', total);
+    try {
+      [items, total] = await Promise.all([
+        Product.find(filter)
+          .sort(
+            textQuery
+              ? { score: { $meta: 'textScore' }, popularity: -1, rating: -1 }
+              : { popularity: -1, rating: -1, createdAt: -1 }
+          )
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+        Product.countDocuments(filter),
+      ]);
+    } catch (err) {
+      const msg = String(err?.message || '');
+      const isMissingTextIndex = msg.toLowerCase().includes('text index') || err?.code === 27;
+
+      if (textQuery && isMissingTextIndex) {
+        usedFallback = true;
+        const regex = buildRegexFromQuery(textQuery);
+
+        const fallbackFilter = {
+          ...(category ? { category } : {}),
+          ...(maxPrice !== undefined
+            ? {
+                $expr: {
+                  $lte: [
+                    {
+                      $ifNull: ['$offerPrice', '$price'],
+                    },
+                    maxPrice,
+                  ],
+                },
+              }
+            : {}),
+          $or: [
+            { name: regex },
+            { brand: regex },
+            { category: regex },
+            { subCategory: regex },
+            { description: regex },
+            { tags: regex },
+            { searchKeywords: regex },
+          ],
+        };
+
+        console.log('SEARCH FALLBACK FILTER', fallbackFilter);
+
+        ;[items, total] = await Promise.all([
+          Product.find(fallbackFilter)
+            .sort({ popularity: -1, rating: -1, createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+          Product.countDocuments(fallbackFilter),
+        ]);
+      } else {
+        throw err;
+      }
+    }
+
+    console.log('SEARCH RESULTS COUNT', { total, returned: items.length, usedFallback });
 
     return NextResponse.json({
       items,

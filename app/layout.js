@@ -3,6 +3,10 @@ import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
+import dynamic from 'next/dynamic';
+
+const Navbar = dynamic(() => import('@/components/Navbar'), { ssr: true });
+const Footer = dynamic(() => import('@/components/Footer'), { ssr: true });
 
 const outfit = Outfit({ subsets: ['latin'], weight: ["300", "400", "500"] });
 
@@ -30,10 +34,6 @@ export default function RootLayout({ children }) {
 
 // Client-side component to include Navbar and Footer
 function RootLayoutWithNav({ children }) {
-  // Using dynamic import to avoid SSR issues with Clerk
-  const Navbar = dynamic(() => import('@/components/Navbar'), { ssr: true });
-  const Footer = dynamic(() => import('@/components/Footer'), { ssr: true });
-  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -44,6 +44,3 @@ function RootLayoutWithNav({ children }) {
     </div>
   );
 }
-
-// Import dynamic from next/dynamic at the bottom to avoid circular dependencies
-import dynamic from 'next/dynamic';

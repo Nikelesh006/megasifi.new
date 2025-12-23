@@ -1,5 +1,6 @@
 import ProductCard from '@/components/ProductCard';
 import { Search } from 'lucide-react';
+import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic'; // always fresh
 
@@ -37,7 +38,14 @@ export default async function SearchPage({ searchParams }) {
   const page = Number(resolvedSearchParams.page || 1) || 1;
 
   // Build base URL from NEXT_PUBLIC_SITE_URL or fallback
+  const h = await headers();
+  const forwardedProto = h.get('x-forwarded-proto');
+  const forwardedHost = h.get('x-forwarded-host');
+  const host = forwardedHost || h.get('host');
+  const proto = forwardedProto || 'http';
+
   const baseUrl =
+    (host ? `${proto}://${host}` : undefined) ??
     process.env.NEXT_PUBLIC_SITE_URL ??
     // default to localhost for dev; in prod set NEXT_PUBLIC_SITE_URL to https://megasifi.shop
     'http://localhost:3000';

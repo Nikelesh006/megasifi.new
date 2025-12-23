@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import RazorpayCheckoutButton from "@/components/RazorpayCheckoutButton.jsx";
 
 const OrderSummary = () => {
   const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext();
@@ -163,24 +164,11 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button 
-        onClick={createOrder} 
-        disabled={isPlacingOrder}
-        className={`w-full py-3 mt-5 transition flex items-center justify-center gap-2 ${
-          isPlacingOrder 
-            ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-            : 'bg-rose-600 text-white hover:bg-rose-700'
-        }`}
-      >
-        {isPlacingOrder ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Placing Order...</span>
-          </>
-        ) : (
-          <span>Place Order</span>
-        )}
-      </button>
+      <RazorpayCheckoutButton
+        amount={getCartAmount() + Math.floor(getCartAmount() * 0.02)}
+        items={cartItems.filter((item) => item.qty > 0)}
+        userId={user?._id}
+      />
     </div>
   );
 };
