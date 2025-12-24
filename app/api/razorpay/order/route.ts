@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import dbConnect from '@/lib/dbConnect';
 import Order from '@/models/Order';
+import { getAuth } from '@clerk/nextjs/server';
 
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
+
+    // Get authenticated user ID
+    const { userId } = getAuth(req);
+    console.log('Authenticated userId from Clerk:', userId);
 
     const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
@@ -27,11 +32,15 @@ export async function POST(req: NextRequest) {
       amount,          // total in rupees
       currency = 'INR',
       items,           // cart items with proper structure
-      userId,          // user id
+      userId: clientUserId, // user id from client
       sellerId,        // seller id
       address,         // selected address object
       date,            // timestamp
     } = body;
+
+    // Use authenticated userId if client userId is not provided
+    const finalUserId = clientUserId || userId;
+    console.log('Final userId being used:', finalUserId, 'Client userId:', clientUserId, 'Auth userId:', userId);
 
     if (!amount) {
       return NextResponse.json(
@@ -41,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate required fields for Order.js schema
-    if (!userId) {
+    if (!finalUserId) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 },
@@ -72,7 +81,7 @@ export async function POST(req: NextRequest) {
     // Create internal order in DB (pending) with all required fields
     const OrderModel = (await import('@/models/Order')).default;
     const internalOrder = await OrderModel.create({
-      userId,
+      userId: finalUserId,
       sellerId,
       items,
       totalAmount: amount,  // Use totalAmount to match TypeScript schema
