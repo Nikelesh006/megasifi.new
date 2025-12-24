@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import RazorpayCheckoutButton from "@/components/RazorpayCheckoutButton.jsx";
 
 const OrderSummary = () => {
-  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext();
+  const { currency, router, getCartCount, getCartAmount, getToken, user, userData, cartItems, setCartItems, products } = useAppContext();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
@@ -82,10 +82,10 @@ const OrderSummary = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (userData) {
       fetchUserAddresses();
     }
-  }, [user]);
+  }, [userData]);
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -167,7 +167,9 @@ const OrderSummary = () => {
       <RazorpayCheckoutButton
         amount={getCartAmount() + Math.floor(getCartAmount() * 0.02)}
         items={cartItems.filter((item) => item.qty > 0)}
-        userId={user?._id}
+        userId={userData?._id}
+        selectedAddress={selectedAddress}
+        products={products}
       />
     </div>
   );

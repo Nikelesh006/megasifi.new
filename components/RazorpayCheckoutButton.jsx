@@ -8,6 +8,8 @@ export default function RazorpayCheckoutButton({
   amount,
   items,
   userId,
+  selectedAddress,
+  products,
 }) {
   const [loading, setLoading] = useState(false);
   const [rzpReady, setRzpReady] = useState(false);
@@ -22,11 +24,49 @@ export default function RazorpayCheckoutButton({
         return;
       }
 
+      if (!selectedAddress) {
+        alert('Please select a delivery address');
+        return;
+      }
+
+      if (!userId) {
+        alert('Please sign in to place an order');
+        return;
+      }
+
+      // Prepare order items with required fields according to Order.js schema
+      const orderItems = items.map(item => {
+        const product = products.find(p => p._id === item.productId);
+        return {
+          product: item.productId,
+          quantity: item.qty,
+          price: item.price,
+          color: item.color,
+          size: item.size || '',
+          image: item.image,
+        };
+      });
+
+      // Get sellerId from first item (assuming single seller per order)
+      const firstProduct = products.find(p => p._id === items[0]?.productId);
+      const sellerId = firstProduct?.sellerId;
+
+      // Prepare the complete order payload
+      const orderPayload = {
+        amount,
+        currency: 'INR',
+        userId,
+        sellerId,
+        address: selectedAddress,
+        items: orderItems,
+        date: Date.now(), // timestamp as required by Order.js schema
+      };
+
       // 1) Create order on our server
       const orderRes = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, currency: 'INR', items, userId }),
+        body: JSON.stringify(orderPayload),
       });
 
       let data;

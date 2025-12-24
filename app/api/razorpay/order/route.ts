@@ -26,8 +26,11 @@ export async function POST(req: NextRequest) {
     const {
       amount,          // total in rupees
       currency = 'INR',
-      items,           // cart items
-      userId,          // optional user id
+      items,           // cart items with proper structure
+      userId,          // user id
+      sellerId,        // seller id
+      address,         // selected address object
+      date,            // timestamp
     } = body;
 
     if (!amount) {
@@ -37,14 +40,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create internal order in DB (pending)
+    // Validate required fields for Order.js schema
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 },
+      );
+    }
+
+    if (!sellerId) {
+      return NextResponse.json(
+        { error: 'Seller ID is required' },
+        { status: 400 },
+      );
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json(
+        { error: 'Items are required' },
+        { status: 400 },
+      );
+    }
+
+    if (!address) {
+      return NextResponse.json(
+        { error: 'Address is required' },
+        { status: 400 },
+      );
+    }
+
+    // Create internal order in DB (pending) with all required fields
     const OrderModel = (await import('@/models/Order')).default;
     const internalOrder = await OrderModel.create({
-      userId: userId || null,
-      items: items || [],
-      totalAmount: amount,
-      status: 'pending',
-      paymentGateway: 'razorpay',
+      userId,
+      sellerId,
+      items,
+      totalAmount: amount,  // Use totalAmount to match TypeScript schema
+      address,             // address object
+      date: date || Date.now(),
+      status: 'pending',   // Use 'pending' to match TypeScript schema
     });
 
     const receiptId = internalOrder._id.toString();
