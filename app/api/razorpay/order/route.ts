@@ -82,12 +82,11 @@ export async function POST(req: NextRequest) {
     const OrderModel = (await import('@/models/Order')).default;
     const internalOrder = await OrderModel.create({
       userId: finalUserId,
-      sellerId,
       items,
       totalAmount: amount,  // Use totalAmount to match TypeScript schema
       address,             // address object
       date: date || Date.now(),
-      status: 'pending',   // Use 'pending' to match TypeScript schema
+      status: 'pending',   // Use 'pending' to match TypeScript enum
     });
 
     const receiptId = internalOrder._id.toString();
