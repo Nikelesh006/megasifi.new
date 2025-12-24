@@ -17,26 +17,34 @@ const Orders = () => {
 
     const fetchSellerOrders = async () => {
         try{
+            console.log('Fetching seller orders...');
             const token = await getToken()
+            console.log('Token obtained:', token ? 'Yes' : 'No');
 
             const { data } = await axios.get('/api/order/seller-order', { 
                 headers: { Authorization: `Bearer ${token}` },
                 cache: 'no-store'
             })
 
+            console.log('API response:', data);
+
             if(data.success){
-                setOrders(data.orders);
+                console.log('Orders fetched successfully:', data.orders?.length || 0, 'orders');
+                setOrders(data.orders || []);
                 setLoading(false)
             }else{
+                console.error('API returned error:', data.message);
                 toast.error(data.message);
+                setOrders([]);
+                setLoading(false);
             }
         
         } catch (error) {
-            toast.error(error.message);
+            console.error('Error fetching orders:', error);
+            toast.error(error.message || 'Failed to fetch orders');
+            setOrders([]);
             setLoading(false);
         }
-        
-        
     }
 
     useEffect(() => {
@@ -98,11 +106,11 @@ const Orders = () => {
                                 <p>
                                     <span className="font-medium">{order.address?.fullname || order.address?.fullName}</span>
                                     <br />
-                                    <span >{order.address.area}</span>
+                                    <span >{order.address?.area}</span>
                                     <br />
-                                    <span>{`${order.address.city}, ${order.address.state}`}</span>
+                                    <span>{`${order.address?.city}, ${order.address?.state}`}</span>
                                     <br />
-                                    <span>{order.address.phoneNumber}</span>
+                                    <span>{order.address?.phoneNumber}</span>
                                 </p>
                             </div>
                             <p className="font-medium my-auto">{currency}{order.amount}</p>
