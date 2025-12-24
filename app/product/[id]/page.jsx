@@ -373,19 +373,6 @@ const Product = () => {
                         </span>
                     </p>
 
-                    <div className="overflow-x-auto">
-                        <table className="table-auto border-collapse w-full max-w-72">
-                            <tbody>
-                                <tr>
-                                    <td className="text-gray-600 font-medium">Category</td>
-                                    <td className="text-gray-800/50">
-                                        {productData.category}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
                     <hr className="bg-gray-600 my-6" />
 
                     {productData.colorOptions && productData.colorOptions.length > 0 && (

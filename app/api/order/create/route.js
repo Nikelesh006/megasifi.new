@@ -80,7 +80,7 @@ export async function POST(request){
             return NextResponse.json({ success: false, message: "Invalid address" }, { status: 400 })
         }
 
-        const totalAmount = amount + Math.floor(amount * 0.02)
+        const totalAmount = amount + Math.floor(amount * 0.05)
 
         const addressSnapshot = {
             fullname: addressDoc.fullname,
