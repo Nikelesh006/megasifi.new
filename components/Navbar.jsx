@@ -61,56 +61,9 @@ const Navbar = () => {
           alt="logo"
         />
 
-        {/* Mobile Search Bar - Only visible on mobile */}
-        <div className="flex-1 mx-3 md:hidden">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full px-3 py-1.5 pr-8 rounded-full border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent text-sm"
-              value={searchQuery}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchQuery(value);
-                if (value) {
-                  setSubCategoryFilter('All');
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const value = e.currentTarget.value;
-                  setSearchQuery(value);
-                  if (value) {
-                    setSubCategoryFilter('All');
-                  }
-                }
-              }}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
-                aria-label="Clear search"
-              >
-                ×
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                const value = searchQuery || '';
-                setSearchQuery(value);
-                if (value) {
-                  setSubCategoryFilter('All');
-                }
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 transform"
-              aria-label="Search"
-            >
-              <Search className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
+        {/* Mobile Search Bar - full width under logo, reusing SearchBar logic */}
+        <div className="w-full md:hidden">
+          <SearchBar />
         </div>
 
         {/* Mobile Menu Button */}
