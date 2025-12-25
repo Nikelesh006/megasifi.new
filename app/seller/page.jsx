@@ -172,27 +172,44 @@ const AddProduct = () => {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2">
 
             {[...Array(7)].map((_, index) => (
-              <label key={index} htmlFor={`image${index}`}>
-                <input onChange={(e) => {
-                  const updatedFiles = [...files];
-                  updatedFiles[index] = e.target.files[0];
-                  setFiles(updatedFiles);
-                }} type="file" id={`image${index}`} hidden />
-                <Image
-                  key={index}
-                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 cursor-pointer"
-                  src={
-                    files[index] 
-                      ? URL.createObjectURL(files[index]) 
-                      : existingImages[index] 
-                        ? existingImages[index] 
-                        : assets.upload_area
-                  }
-                  alt=""
-                  width={100}
-                  height={100}
-                />
-              </label>
+              <div key={index} className="relative">
+                <label htmlFor={`image${index}`}>
+                  <input onChange={(e) => {
+                    const updatedFiles = [...files];
+                    updatedFiles[index] = e.target.files[0];
+                    setFiles(updatedFiles);
+                  }} type="file" id={`image${index}`} hidden />
+                  <Image
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 cursor-pointer"
+                    src={
+                      files[index] 
+                        ? URL.createObjectURL(files[index]) 
+                        : existingImages[index] 
+                          ? existingImages[index] 
+                          : assets.upload_area
+                    }
+                    alt=""
+                    width={100}
+                    height={100}
+                  />
+                </label>
+                {(existingImages[index] || files[index]) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedFiles = [...files];
+                      const updatedExisting = [...existingImages];
+                      updatedFiles[index] = null;
+                      updatedExisting[index] = '';
+                      setFiles(updatedFiles);
+                      setExistingImages(updatedExisting);
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             ))}
 
           </div>
