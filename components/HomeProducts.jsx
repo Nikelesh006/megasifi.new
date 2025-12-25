@@ -5,13 +5,27 @@ import { Heart, ShoppingCart, TrendingUp } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 
 const HomeProducts = ({ category = 'Popular Products' }) => {
-  const { addToCart, router, toggleLike, isLiked, products, getCartCount, cartItems, currency } = useAppContext();
+  const { addToCart, router, toggleLike, isLiked, products, getCartCount, cartItems, currency, isLoadingProducts } = useAppContext();
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const count = getCartCount();
     setCartCount(count);
   }, [cartItems, getCartCount]);
+
+  // Show loading state while products are being fetched
+  if (isLoadingProducts) {
+    return (
+      <div className="flex flex-col items-center pt-14">
+        <div className="flex items-center gap-2 mb-6">
+          <TrendingUp className="w-6 h-6 text-rose-600" />
+          <h2 className="text-2xl font-medium text-rose-800">{category}</h2>
+          <TrendingUp className="w-6 h-6 text-rose-600" />
+        </div>
+        <p className="text-gray-500 text-center py-8">Loading products...</p>
+      </div>
+    );
+  }
 
   // Filter products based on category and subCategory
   const filteredProducts = products.filter(product => 

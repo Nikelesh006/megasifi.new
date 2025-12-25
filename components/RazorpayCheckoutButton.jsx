@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function RazorpayCheckoutButton({
   amount,
@@ -20,17 +21,17 @@ export default function RazorpayCheckoutButton({
       setLoading(true);
 
       if (!rzpReady || typeof window === 'undefined' || !window.Razorpay) {
-        alert('Payment UI failed to load. Please refresh and try again.');
+        toast.error('Payment UI failed to load. Please refresh and try again.');
         return;
       }
 
       if (!selectedAddress) {
-        alert('Please select a delivery address');
+        toast.error('Please select a delivery address');
         return;
       }
 
       if (!userId) {
-        alert('Please sign in to place an order');
+        toast.error('Please sign in to place an order');
         return;
       }
 
@@ -78,7 +79,7 @@ export default function RazorpayCheckoutButton({
 
       if (!orderRes.ok || !data.razorpayOrder?.id) {
         console.error('Order creation failed', data);
-        alert(data?.error || data?.message || `Unable to start payment (HTTP ${orderRes.status}).`);
+        toast.error(data?.error || data?.message || `Unable to start payment (HTTP ${orderRes.status}).`);
         return;
       }
 
@@ -107,10 +108,10 @@ export default function RazorpayCheckoutButton({
 
           const result = await verifyRes.json();
           if (result.success) {
-            alert('Payment successful!');
+            toast.success('Payment successful!');
             router.push('/order-placed'); // using existing success route
           } else {
-            alert('Payment verification failed');
+            toast.error('Payment verification failed');
           }
         },
         prefill: {
@@ -127,7 +128,7 @@ export default function RazorpayCheckoutButton({
       rzp.open();
     } catch (err) {
       console.error(err);
-      alert('Payment could not be started.');
+      toast.error('Payment could not be started.');
     } finally {
       setLoading(false);
     }

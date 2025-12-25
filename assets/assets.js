@@ -45,6 +45,7 @@ import skirt from "./skirt.png"
 import kurti from "./kurti.png"
 import activewear from "./activewear.png"
 
+
 export const assets = {
   search_icon,
   user_icon,
@@ -91,7 +92,7 @@ export const assets = {
   saree,
   skirt,
   kurti,
-  activewear
+  activewear,
 };
 
 export const BagIcon = () => {
