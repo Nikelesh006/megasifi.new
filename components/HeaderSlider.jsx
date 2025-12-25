@@ -38,7 +38,7 @@ const HeaderSlider = () => {
   };
 
   return (
-    <div className="overflow-hidden relative w-full mt-7">
+    <div className="overflow-hidden relative w-full mt-0 md:mt-2 lg:mt-4">
       <div
         className="flex transition-transform duration-700 ease-in-out"
         style={{
@@ -48,10 +48,10 @@ const HeaderSlider = () => {
         {sliderData.map((slide, index) => (
           <div
             key={slide.id}
-            className="w-full min-w-full"
+            className="w-full min-w-full h-[300px] md:h-[450px] lg:h-[500px]"
           >
             <Image
-              className="w-full h-auto object-contain"
+              className="w-full h-full object-contain"
               src={slide.imgSrc}
               alt={`Slide ${index + 1}`}
               width={1920}
@@ -62,7 +62,7 @@ const HeaderSlider = () => {
         ))}
       </div>
 
-      <div className="flex items-center justify-center gap-2 mt-4">
+      <div className="flex items-center justify-center gap-2 mt-2 mb-2">
         {sliderData.map((_, index) => (
           <div
             key={index}

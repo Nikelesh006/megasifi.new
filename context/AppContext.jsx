@@ -19,6 +19,7 @@ export const AppContextProvider = (props) => {
   const { getToken } = useAuth();
 
   const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [userData, setUserData] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -28,6 +29,7 @@ export const AppContextProvider = (props) => {
 
   const fetchProductData = async () => {
     try {
+      setIsLoadingProducts(true);
       const { data } = await axios.get('/api/product/list');
 
       if (data.success) {
@@ -37,6 +39,8 @@ export const AppContextProvider = (props) => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsLoadingProducts(false);
     }
   };
 
@@ -244,6 +248,7 @@ export const AppContextProvider = (props) => {
     isSeller, setIsSeller,
     userData, fetchUserData,
     products, fetchProductData,
+    isLoadingProducts,
     cartItems, setCartItems,
     addToCart, updateCartQuantity,
     getCartCount, getCartAmount,
