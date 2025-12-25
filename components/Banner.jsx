@@ -8,7 +8,7 @@ const Banner = () => {
         Help us improve Megasifi
       </h2>
       <p className="mt-2 max-w-2xl text-sm md:text-base font-medium text-gray-800/70">
-        Feel free to contact us if you have any suggestions for the site's improvements, new features you’d like to see, or if you face any errors while using the site.
+        Feel free to contact us if you have any suggestions for the site's improvements, new features you would like to see, or if you face any errors while using the site.
       </p>
       <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3">
         <a
