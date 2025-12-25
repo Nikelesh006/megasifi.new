@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="w-full lg:w-4/5">
           <Image className="w-24 sm:w-28 md:w-32" src={assets.logo_maroon_megasifi} alt="logo" />
           <p className="mt-4 sm:mt-6 text-sm text-gray-700 leading-relaxed">
-            Megasifi is your one-stop destination for stylish and quality clothing, curated to inspire confidence and elevate your everyday look. We blend trendsetting designs with comfort, offering a wide selection for every occasion. Discover fashion that suits your personality and experience seamless shopping backed by our commitment to customer satisfaction.
+            Megasifi is your one-stop destination for stylish and quality clothing,curated to inspire confidence and elevate your everyday look. We blend trendsetting designs with comfort, offering a wide selection for every occasion. Discover fashion that suits your personality and experience seamless shopping backed by our commitment to customer satisfaction.
           </p>
         </div>
 
