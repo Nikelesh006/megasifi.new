@@ -19,12 +19,8 @@ const Navbar = ({ toggleSidebar }) => {
           <div className="w-6 h-0.5 bg-gray-600"></div>
         </button>
         
-        <Image 
-          onClick={() => router.push('/')} 
-          className='w-28 lg:w-32 cursor-pointer' 
-          src={assets.logo_maroon_megasifi} 
-          alt="Megasifi Logo" 
-        />
+        
+        
       </div>
     </div>
   )

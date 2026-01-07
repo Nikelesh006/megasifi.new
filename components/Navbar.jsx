@@ -118,7 +118,7 @@ const Navbar = () => {
               onClick={() => router.push('/seller')}
               className="text-xs border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-rose-700 transition"
             >
-              Seller Dashboard
+              Admin Dashboard
             </button>
           )}
         </div>
