@@ -13,7 +13,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    const orders = await Order.find({})
+    const orders = await Order.find({ userId })
       .populate("items.product")
       .sort({ date: -1 })
       .lean();
