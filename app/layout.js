@@ -14,18 +14,9 @@ export const metadata = {
   title: "Megasifi",
   description: "Your one-stop destination for stylish and quality clothing",
   icons: {
-    icon: [
-      {
-        url: "/favicon1.ico",
-        rel: "icon",
-        type: "image/x-icon",
-      },
-      {
-        url: "/favicon1.ico",
-        rel: "shortcut icon",
-        type: "image/x-icon",
-      },
-    ],
+    icon: "/favicon1.ico",
+    shortcut: "/favicon1.ico",
+    apple: "/favicon1.ico",
   },
 };
 
