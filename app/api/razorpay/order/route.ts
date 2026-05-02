@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
     const OrderModel = (await import('@/models/Order')).default;
     const internalOrder = await OrderModel.create({
       userId: finalUserId,
+      sellerId: sellerId,
       items: items.map(item => ({
         product: item.product,
         quantity: item.quantity,
@@ -90,9 +91,11 @@ export async function POST(req: NextRequest) {
         color: item.color,
         image: item.image,
       })),
-      totalAmount: amount,
-      status: 'pending',
-      paymentGateway: 'razorpay',
+      amount: amount,
+      address: address,
+      addressId: address._id,
+      status: 'order placed',
+      date: date || Date.now(),
     });
 
     const receiptId = internalOrder._id.toString();
