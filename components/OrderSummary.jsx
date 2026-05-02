@@ -12,6 +12,11 @@ const OrderSummary = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [promoError, setPromoError] = useState("");
+
+  const validPromoCodes = ["MONI10", "SOWN10", "JEMI10", "ANBARASI10", "RAMYA10", "AISHU10"];
 
   const fetchUserAddresses = async () => {
     try {
@@ -68,11 +73,11 @@ const OrderSummary = () => {
       );
 
       if (data.success) {
-        toast.success(data.message );
+        toast.success(data.message);
         setCartItems([]);
         router.push("/order-placed");
       } else {
-        toast.error(data.message );
+        toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
@@ -137,8 +142,50 @@ const OrderSummary = () => {
         <div>
           <label className="text-base font-medium uppercase text-gray-600 block mb-2">Promo Code</label>
           <div className="flex flex-col items-start gap-3">
-            <input type="text" placeholder="Enter promo code" className="flex-grow w-full outline-none p-2.5 text-gray-600 border" />
-            <button className="bg-rose-600 text-white px-9 py-2 hover:bg-rose-700">Apply</button>
+            <input
+              type="text"
+              placeholder="Enter promo code"
+              value={promoCode}
+              onChange={(e) => {
+                setPromoCode(e.target.value.toUpperCase());
+                setPromoError("");
+              }}
+              disabled={appliedDiscount > 0}
+              className="flex-grow w-full outline-none p-2.5 text-gray-600 border disabled:bg-gray-100"
+            />
+            {appliedDiscount > 0 ? (
+              <button
+                onClick={() => {
+                  setAppliedDiscount(0);
+                  setPromoCode("");
+                }}
+                className="bg-gray-600 text-white px-9 py-2 hover:bg-gray-700"
+              >
+                Remove
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  const code = promoCode.trim().toUpperCase();
+                  if (validPromoCodes.includes(code)) {
+                    const discount = Math.floor(getCartAmount() * 0.1);
+                    setAppliedDiscount(discount);
+                    setPromoError("");
+                    toast.success("10% discount applied!");
+                  } else {
+                    setPromoError("Invalid promo code");
+                    setAppliedDiscount(0);
+                  }
+                }}
+                className="bg-rose-600 text-white px-9 py-2 hover:bg-rose-700"
+              >
+                Apply
+              </button>
+            )}
+            {promoError && <p className="text-red-500 text-sm">{promoError}</p>}
+            {appliedDiscount > 0 && (
+              <p className="text-green-600 text-sm">10% discount applied!</p>
+            )}
           </div>
         </div>
 
@@ -149,27 +196,34 @@ const OrderSummary = () => {
             <p className="uppercase text-gray-600">Items {getCartCount()}</p>
             <p className="text-gray-800">{currency}{getCartAmount()}</p>
           </div>
+          {appliedDiscount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <p>Discount (10%)</p>
+              <p className="font-medium">-{currency}{appliedDiscount}</p>
+            </div>
+          )}
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
             <p className="font-medium text-gray-800">Free</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Tax (5%)</p>
-            <p className="font-medium text-gray-800">{currency}{Math.floor(getCartAmount() * 0.05)}</p>
+            <p className="font-medium text-gray-800">{currency}{Math.floor((getCartAmount() - appliedDiscount) * 0.05)}</p>
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>{currency}{getCartAmount() + Math.floor(getCartAmount() * 0.05)}</p>
+            <p>{currency}{getCartAmount() - appliedDiscount + Math.floor((getCartAmount() - appliedDiscount) * 0.05)}</p>
           </div>
         </div>
       </div>
 
       <RazorpayCheckoutButton
-        amount={getCartAmount() + Math.floor(getCartAmount() * 0.05)}
+        amount={getCartAmount() - appliedDiscount + Math.floor((getCartAmount() - appliedDiscount) * 0.05)}
         items={cartItems.filter((item) => item.qty > 0)}
         userId={userData?._id}
         selectedAddress={selectedAddress}
         products={products}
+        discount={appliedDiscount}
       />
     </div>
   );

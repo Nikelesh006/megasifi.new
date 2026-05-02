@@ -82,12 +82,17 @@ export async function POST(req: NextRequest) {
     const OrderModel = (await import('@/models/Order')).default;
     const internalOrder = await OrderModel.create({
       userId: finalUserId,
-      sellerId: sellerId,  // Add sellerId to match schema
-      items,
-      amount: amount,  // Use 'amount' to match Mongoose schema
-      address,             // address object
-      date: date || Date.now(),
-      status: 'order placed',   // Use 'order placed' to match schema default
+      items: items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size,
+        color: item.color,
+        image: item.image,
+      })),
+      totalAmount: amount,
+      status: 'pending',
+      paymentGateway: 'razorpay',
     });
 
     const receiptId = internalOrder._id.toString();

@@ -144,10 +144,10 @@ export default function RazorpayCheckoutButton({
       <button
         type="button"
         onClick={handlePlaceOrder}
-        disabled={loading || amount <= 0}
+        disabled={loading || amount <= 0 || !rzpReady}
         className="w-full py-3 mt-5 transition flex items-center justify-center gap-2 bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {loading ? 'Processing...' : 'Place Order'}
+        {loading ? 'Processing...' : !rzpReady ? 'Loading Payment...' : 'Place Order'}
       </button>
     </>
   );
