@@ -16,7 +16,7 @@ const OrderSummary = () => {
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
 
-  const validPromoCodes = ["MONI10", "SOWN10", "JEMI10", "ANBARASI10", "RAMYA10", "AISHU10"];
+  const validPromoCodes = ["MONI10", "SOWN10", "JEMI10", "ANBARASI10", "RAMYA10", "AISHU10", "REJITHA10", "PRINCY10"];
 
   const fetchUserAddresses = async () => {
     try {
