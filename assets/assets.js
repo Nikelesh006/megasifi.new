@@ -25,10 +25,10 @@ import girl_with_earphone_image from "./girl_with_earphone_image.png";
 import boy_with_laptop_image from "./boy_with_laptop_image.png";
 import checkmark from "./checkmark.png";
 import logo_maroon_megasifi from "./logo_maroon_megasifi.png";
-import banner1 from "./banner1.png";
-import banner2 from "./banner2.png";
-import banner3 from "./banner3.png";
-import banner4 from "./banner4.png";
+import banner1 from "./banners1.png";
+import banner2 from "./banners2.png";
+import banner3 from "./banners3.png";
+import banner4 from "./banners4.png";
 import footer_banner1 from "./footer_banner1.png";
 import footer_banner2 from "./footer_banner2.png";
 import featured1 from "./featured1.png";
@@ -129,47 +129,47 @@ export const HomeIcon = () => (
 
 export const productsDummyData = [
   {
-  "_id": "67a1f4e43f34a77b6dde9144",
-  "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
-  "name": "Linen Saree",
-  "description": "Elegant linen saree with beautiful patterns",
-  "price": 49.99,
-  "offerPrice": 39.99,
-  "image": [
-    assets.saree_linen_image  // This uses your local image
-  ],
-  "category": "Clothing",
-  "date": 1738667236865,
-  "__v": 0
-},
+    "_id": "67a1f4e43f34a77b6dde9144",
+    "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
+    "name": "Linen Saree",
+    "description": "Elegant linen saree with beautiful patterns",
+    "price": 49.99,
+    "offerPrice": 39.99,
+    "image": [
+      assets.saree_linen_image  // This uses your local image
+    ],
+    "category": "Clothing",
+    "date": 1738667236865,
+    "__v": 0
+  },
   {
-  "_id": "67a1f4e43f34a77b6dde9144",
-  "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
-  "name": "Cotton Saree",
-  "description": "Elegant Cotton saree with beautiful patterns",
-  "price": 49.99,
-  "offerPrice": 39.99,
-  "image": [
-    assets.saree_grey_image  // This uses your local image
-  ],
-  "category": "Clothing",
-  "date": 1738667236865,
-  "__v": 0
-},
+    "_id": "67a1f4e43f34a77b6dde9144",
+    "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
+    "name": "Cotton Saree",
+    "description": "Elegant Cotton saree with beautiful patterns",
+    "price": 49.99,
+    "offerPrice": 39.99,
+    "image": [
+      assets.saree_grey_image  // This uses your local image
+    ],
+    "category": "Clothing",
+    "date": 1738667236865,
+    "__v": 0
+  },
   {
-  "_id": "67a1f4e43f34a77b6dde9144",
-  "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
-  "name": "Cotton Saree",
-  "description": "Elegant Cotton saree with beautiful patterns",
-  "price": 49.99,
-  "offerPrice": 39.99,
-  "image": [
-    assets.saree_new2_image  // This uses your local image
-  ],
-  "category": "Clothing",
-  "date": 1738667236865,
-  "__v": 0
-},
+    "_id": "67a1f4e43f34a77b6dde9144",
+    "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
+    "name": "Cotton Saree",
+    "description": "Elegant Cotton saree with beautiful patterns",
+    "price": 49.99,
+    "offerPrice": 39.99,
+    "image": [
+      assets.saree_new2_image  // This uses your local image
+    ],
+    "category": "Clothing",
+    "date": 1738667236865,
+    "__v": 0
+  },
   {
     "_id": "67a1f5993f34a77b6dde914e",
     "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",
